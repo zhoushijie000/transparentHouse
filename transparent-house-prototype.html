@@ -6,24 +6,73 @@
   <title>透明房产-原型</title>
   <style>
     :root{
-      --blue:#1f6dff;--blue2:#eaf2ff;--bg:#f4f8ff;--line:#d9e5fa;--text:#1f2d45;--muted:#6f7f99;
+      --blue:#1f6dff;
+      --bg:#f4f8ff;
+      --line:#d9e5fa;
+      --text:#1f2d45;
+      --muted:#6f7f99;
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:radial-gradient(circle at 10% -10%,#dceaff 0,transparent 35%),#eef4ff;color:var(--text);display:flex;justify-content:center;padding:12px}
-    .app{width:100%;max-width:430px;min-height:860px;background:#f8fbff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 14px 34px rgba(22,47,96,.12)}
-    .top{height:52px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+    body{
+      margin:0;
+      font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+      background:radial-gradient(circle at 10% -10%,#dceaff 0,transparent 35%),#eef4ff;
+      color:var(--text);
+      display:flex;
+      justify-content:center;
+      padding:12px;
+    }
+    .app{
+      width:100%;
+      max-width:430px;
+      min-height:860px;
+      background:#f8fbff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:0 14px 34px rgba(22,47,96,.12);
+    }
+    .top{
+      height:52px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:20px;
+      font-weight:700;
+      background:#fff;
+      border-bottom:1px solid var(--line);
+      position:sticky;
+      top:0;
+      z-index:5;
+    }
     .back{
-      position:absolute;left:10px;top:50%;transform:translateY(-50%);
-      border:0;background:transparent;color:#2b3f62;
-      font-size:22px;line-height:1;padding:0 4px;display:none;cursor:pointer
+      position:absolute;
+      left:10px;
+      top:50%;
+      transform:translateY(-50%);
+      border:0;
+      background:transparent;
+      color:#2b3f62;
+      font-size:22px;
+      line-height:1;
+      padding:0 4px;
+      display:none;
+      cursor:pointer;
     }
     .page{display:none;padding:14px}
     .page.active{display:block}
     .row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:12px}
     .search{display:flex;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:0 10px}
     .search input{height:42px;border:0;outline:0;width:100%;font-size:14px;background:transparent}
-    .mapbtn,.btn{border:0;background:linear-gradient(180deg,#2f82ff,#1a64dd);color:#fff;border-radius:10px;font-weight:600;cursor:pointer}
-    .mapbtn{padding:0 14px;font-size:14px;cursor:default;opacity:.9}
+    .mapbtn,.btn{
+      border:0;
+      background:linear-gradient(180deg,#2f82ff,#1a64dd);
+      color:#fff;
+      border-radius:10px;
+      font-weight:600;
+      cursor:pointer;
+    }
+    .mapbtn{padding:0 14px;font-size:14px;opacity:.95}
     .cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
     .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;cursor:pointer}
     .card h3{margin:0 0 6px;font-size:16px}
@@ -35,12 +84,25 @@
     .filters{display:flex;align-items:center;gap:14px;margin-bottom:12px;overflow-x:auto;padding:0 2px 2px}
     .filters::-webkit-scrollbar{display:none}
     .filters select{
-      height:28px;border:0;background:transparent;font-size:15px;color:#364a6a;padding:0 14px 0 0;outline:0;
-      appearance:none;-webkit-appearance:none;line-height:28px;min-width:50px;
+      height:28px;
+      border:0;
+      background:transparent;
+      font-size:15px;
+      color:#364a6a;
+      padding:0 14px 0 0;
+      outline:0;
+      appearance:none;
+      -webkit-appearance:none;
+      line-height:28px;
+      min-width:50px;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%236b7f9e' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
-      background-repeat:no-repeat;background-position:right center;background-size:10px 6px
+      background-repeat:no-repeat;
+      background-position:right center;
+      background-size:10px 6px;
     }
     .filters select:focus{color:#1f6dff}
+    .ctrl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+    .ctrl.single{grid-template-columns:1fr}
     .ctrl select,.ctrl input{height:34px;border:1px solid var(--line);background:#fff;border-radius:9px;font-size:12px;color:#334766;padding:0 8px;outline:0}
     .list{display:flex;flex-direction:column;gap:10px}
     .item{display:grid;grid-template-columns:102px 1fr auto;gap:9px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px;cursor:pointer}
@@ -60,8 +122,6 @@
     .stock b{display:block;font-size:18px;color:#1b5ad0}
     .stock span{font-size:11px;color:#7387a7}
     .empty{padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;background:#fff;color:#73839f}
-    .ctrl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-    .ctrl.single{grid-template-columns:1fr}
     .table{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:10px}
     table{width:100%;min-width:640px;border-collapse:collapse}
     th,td{padding:9px 10px;border-bottom:1px solid #edf3ff;font-size:13px;white-space:nowrap;text-align:left}
@@ -110,7 +170,11 @@
     .modal-card p{margin:0 0 10px;font-size:13px;color:#5f7190}
     .qr{width:168px;height:168px;margin:0 auto 10px;border:8px solid #fff;box-shadow:0 0 0 1px #d7e3fa;border-radius:6px;background:repeating-linear-gradient(0deg,#000 0 6px,#fff 6px 12px),repeating-linear-gradient(90deg,#000 0 6px,#fff 6px 12px);background-blend-mode:multiply}
     .close-btn{width:100%;height:34px;border:0;border-radius:9px;background:#eef4ff;color:#225fce;font-size:13px;font-weight:600;cursor:pointer}
-    @media (max-width:430px){body{padding:0}.app{max-width:none;border-radius:0;min-height:100vh}.top{border-radius:0}}
+    @media (max-width:430px){
+      body{padding:0}
+      .app{max-width:none;border-radius:0;min-height:100vh}
+      .top{border-radius:0}
+    }
   </style>
 </head>
 <body>
@@ -119,8 +183,8 @@
 
   <section id="p-home" class="page active">
     <div class="row">
-      <label class="search"><span style="color:#9ca9bf;margin-right:7px">🔍</span><input id="homeSearch" placeholder="请输入您感兴趣的楼盘"></label>
-      <button id="mapBtn" class="mapbtn">地图找房</button>
+      <label class="search"><span style="color:#9ca9bf;margin-right:7px">⌕</span><input id="homeSearch" placeholder="请输入您感兴趣的楼盘"></label>
+      <button id="mapBtn" class="mapbtn">板块地图</button>
     </div>
     <div class="cards">
       <div class="card" data-go="market">
@@ -139,7 +203,7 @@
     <div class="filters">
       <select id="fRegion"><option value="">区域</option></select>
       <select id="fPrice"><option value="">价格</option><option value="0-15000">1.5万以下</option><option value="15000-20000">1.5万-2万</option><option value="20000-99999">2万以上</option></select>
-      <select id="fRoom"><option value="">户型</option><option value="2">2室</option><option value="3">3室</option><option value="4">4室+</option></select>
+      <select id="fRoom"><option value="">户型</option><option value="2">2室</option><option value="3">3室</option><option value="4">4室</option></select>
       <select id="fArea"><option value="">面积</option><option value="0-90">90㎡以下</option><option value="90-120">90-120㎡</option><option value="120-999">120㎡以上</option></select>
       <select id="fMore"><option value="">更多</option><option value="clear">清水</option><option value="refined">精装</option></select>
     </div>
@@ -197,6 +261,7 @@
     <div class="block"><div class="bt">项目介绍</div><div id="intro" style="font-size:13px;color:#5c6e8b;line-height:1.6"></div></div>
   </section>
 </div>
+
 <div id="qrModal" class="modal">
   <div class="modal-card">
     <h4 id="qrProjectTitle">楼盘详细报告咨询</h4>
@@ -207,161 +272,383 @@
 </div>
 
 <script>
-const properties=[
-{id:"p1",name:"繁花里",district:"邛崃市",priceMin:8301,priceMax:11667,areaMin:68.64,areaMax:153.53,tags:["清水","住宅","容积率2.5"],signed30:286,stock:286,total:445,record:"8301~11667元/㎡",open:"1-7栋",layout:["2室2厅1卫 68㎡","3室2厅2卫 98㎡","4室2厅2卫 126㎡"],intro:"项目位于邛崃主城区，兼顾刚需与改善，生活配套成熟。",img:"i1",deco:"clear"},
-{id:"p2",name:"世邦昆仑城1期",district:"金堂县",priceMin:6488,priceMax:10764,areaMin:79.9,areaMax:168.31,tags:["清水","容积率2.25"],signed30:161,stock:161,total:312,record:"6488~10764元/㎡",open:"2-11栋",layout:["3室2厅2卫 92㎡","3室2厅2卫 116㎡","4室2厅2卫 138㎡"],intro:"项目强调景观与舒适度，多面积段可选。",img:"i2",deco:"clear"},
-{id:"p3",name:"凯瑞·望丛天序",district:"郫都区",priceMin:14177,priceMax:37684,areaMin:90.91,areaMax:248.56,tags:["清水","精装","容积率2.0"],signed30:109,stock:109,total:260,record:"14177~37684元/㎡",open:"3-9栋",layout:["3室2厅2卫 101㎡","4室2厅2卫 143㎡","5室2厅3卫 188㎡"],intro:"改善型定位，近产业区和教育配套。",img:"i3",deco:"refined"},
-{id:"p4",name:"中鹏·紫金名邸",district:"双流区",priceMin:21340,priceMax:27726,areaMin:114.61,areaMax:142.74,tags:["清水","容积率1.5"],signed30:120,stock:120,total:220,record:"21340~27726元/㎡",open:"1-6栋",layout:["3室2厅2卫 115㎡","4室2厅2卫 128㎡","4室2厅2卫 142㎡"],intro:"双流主城板块，低密居住社区。",img:"i4",deco:"clear"},
-{id:"p5",name:"龙湖天曜",district:"高新区",priceMin:23200,priceMax:31800,areaMin:95,areaMax:179,tags:["精装","地铁沿线","容积率2.2"],signed30:428,stock:96,total:398,record:"23200~31800元/㎡",open:"1-8栋",layout:["3室2厅2卫 105㎡","4室2厅2卫 139㎡","4室2厅3卫 178㎡"],intro:"高新区核心居住片区，改善产品为主。",img:"i5",deco:"refined"},
-{id:"p6",name:"城投锦澜台",district:"成华区",priceMin:18800,priceMax:25800,areaMin:84,areaMax:143,tags:["清水","准现房","容积率2.8"],signed30:176,stock:143,total:360,record:"18800~25800元/㎡",open:"2-10栋",layout:["2室2厅1卫 84㎡","3室2厅2卫 108㎡","4室2厅2卫 136㎡"],intro:"生活与商业配套成熟，覆盖首置和改善客群。",img:"i6",deco:"clear"}
+const properties = [
+  { id: "p1", name: "繁花里", district: "邛崃市", priceMin: 8301, priceMax: 11667, areaMin: 68.64, areaMax: 153.53, tags: ["清水", "住宅", "容积率1.5"], signed30: 286, stock: 286, total: 445, record: "8301~11667元/㎡", open: "1-7栋", layout: ["2室2厅1卫 68㎡", "3室2厅2卫 98㎡", "4室2厅2卫 126㎡"], intro: "项目位于邛崃主城片区，兼顾刚需与改善，生活配套成熟。", img: "i1", deco: "clear" },
+  { id: "p2", name: "世邦昆仑府·朴樾", district: "金堂县", priceMin: 6488, priceMax: 10764, areaMin: 79.9, areaMax: 168.31, tags: ["清水", "低密", "容积率2.25"], signed30: 161, stock: 161, total: 312, record: "6488~10764元/㎡", open: "2-11栋", layout: ["3室2厅2卫 92㎡", "3室2厅2卫 116㎡", "4室2厅2卫 138㎡"], intro: "项目强调景观与舒适度，多面积段可选。", img: "i2", deco: "clear" },
+  { id: "p3", name: "凯瑞·望丛天序", district: "郫都区", priceMin: 14177, priceMax: 37684, areaMin: 90.91, areaMax: 248.56, tags: ["清水", "精装", "容积率2.0"], signed30: 109, stock: 109, total: 260, record: "14177~37684元/㎡", open: "3-9栋", layout: ["3室2厅2卫 101㎡", "4室2厅2卫 143㎡", "5室2厅3卫 188㎡"], intro: "改善型定位，近产业区和教育配套。", img: "i3", deco: "refined" },
+  { id: "p4", name: "中旅·紫金名邸", district: "双流区", priceMin: 21340, priceMax: 27726, areaMin: 114.61, areaMax: 142.74, tags: ["清水", "住宅", "容积率1.5"], signed30: 120, stock: 120, total: 220, record: "21340~27726元/㎡", open: "1-6栋", layout: ["3室2厅2卫 115㎡", "4室2厅2卫 128㎡", "4室2厅2卫 142㎡"], intro: "双流主城板块，低密居住社区。", img: "i4", deco: "clear" },
+  { id: "p5", name: "龙湖天曜", district: "高新区", priceMin: 23200, priceMax: 31800, areaMin: 95, areaMax: 179, tags: ["精装", "地铁沿线", "容积率2.2"], signed30: 428, stock: 96, total: 398, record: "23200~31800元/㎡", open: "1-8栋", layout: ["3室2厅2卫 105㎡", "4室2厅2卫 139㎡", "4室2厅3卫 178㎡"], intro: "高新区核心居住片区，改善产品为主。", img: "i5", deco: "refined" },
+  { id: "p6", name: "城投锦澜台", district: "成华区", priceMin: 18800, priceMax: 25800, areaMin: 84, areaMax: 143, tags: ["清水", "准现房", "容积率1.8"], signed30: 176, stock: 143, total: 360, record: "18800~25800元/㎡", open: "2-10栋", layout: ["2室2厅1卫 84㎡", "3室2厅2卫 108㎡", "4室2厅2卫 136㎡"], intro: "生活与商业配套成熟，覆盖首置和改善客群。", img: "i6", deco: "clear" }
 ];
 
-const months=["2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02"];
-const factors=[0.89,0.91,0.94,0.97,1.01,1.04,1.08,1.03,0.98,0.94,0.77,1.00];
-const base=[
-{region:"成都市",u:324,a:38560,p:18950,t:225},
-{region:"高新区",u:77,a:9940,p:27680,t:289},
-{region:"天府新区",u:69,a:8840,p:26180,t:267},
-{region:"双流区",u:51,a:6240,p:23370,t:228},
-{region:"郫都区",u:45,a:5450,p:17890,t:179},
-{region:"龙泉驿区",u:40,a:4720,p:15980,t:154},
-{region:"青白江区",u:23,a:2700,p:10940,t:106},
-{region:"金堂县",u:19,a:2270,p:9670,t:95}
+const months = ["2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02"];
+const factors = [0.89, 0.91, 0.94, 0.97, 1.01, 1.04, 1.08, 1.03, 0.98, 0.94, 0.77, 1.0];
+const base = [
+  { region: "成都市", u: 324, a: 38560, p: 18950, t: 225 },
+  { region: "高新区", u: 77, a: 9940, p: 27680, t: 289 },
+  { region: "天府新区", u: 69, a: 8840, p: 26180, t: 267 },
+  { region: "双流区", u: 51, a: 6240, p: 23370, t: 228 },
+  { region: "郫都区", u: 45, a: 5450, p: 17890, t: 179 },
+  { region: "龙泉驿区", u: 40, a: 4720, p: 15980, t: 154 },
+  { region: "青白江区", u: 23, a: 2700, p: 10940, t: 106 },
+  { region: "金堂县", u: 19, a: 2270, p: 9670, t: 95 }
 ];
-const marketData={};
-months.forEach((m,i)=>marketData[m]=base.map((r,idx)=>{
-  const k=factors[i]*(1+(idx*0.008));
-  return {region:r.region,units:Math.round(r.u*k),area:Math.round(r.a*k),avgPrice:Math.round(r.p*(0.985+i*0.002+idx*0.001)),avgTotal:Math.round(r.t*(0.99+i*0.002))};
-}));
 
-const state={page:"home",stack:[],detail:properties[0].id,q:"",f:{region:"",price:"",room:"",area:"",more:""}};
-const $=id=>document.getElementById(id);
-function num(n){return Number(n).toLocaleString("zh-CN")}
-function rng(v){if(!v)return null;const [a,b]=v.split("-").map(Number);return{a,b}}
-function filtered(){
-  const q=state.q.trim().toLowerCase(),pr=rng(state.f.price),ar=rng(state.f.area),room=state.f.room?Number(state.f.room):null;
-  return properties.filter(p=>{
-    const t=!q||p.name.toLowerCase().includes(q);
-    const r=!state.f.region||p.district===state.f.region;
-    const pp=!pr||(p.priceMin<pr.b&&p.priceMax>=pr.a);
-    const aa=!ar||(p.areaMin<ar.b&&p.areaMax>=ar.a);
-    const mm=!state.f.more||p.deco===state.f.more;
-    const rr=!room||p.layout.some(x=>x.startsWith(room+"室"))||(room===4&&p.layout.some(x=>/^([45])室/.test(x)));
-    return t&&r&&pp&&aa&&mm&&rr;
+const marketData = {};
+months.forEach((month, index) => {
+  marketData[month] = base.map((row, rowIndex) => {
+    const factor = factors[index] * (1 + rowIndex * 0.008);
+    return {
+      region: row.region,
+      units: Math.round(row.u * factor),
+      area: Math.round(row.a * factor),
+      avgPrice: Math.round(row.p * (0.985 + index * 0.002 + rowIndex * 0.001)),
+      avgTotal: Math.round(row.t * (0.99 + index * 0.002))
+    };
+  });
+});
+
+const state = {
+  page: "home",
+  stack: [],
+  detail: properties[0].id,
+  q: "",
+  f: { region: "", price: "", room: "", area: "", more: "" }
+};
+
+const $ = (id) => document.getElementById(id);
+
+function num(value) {
+  return Number(value).toLocaleString("zh-CN");
+}
+
+function rng(value) {
+  if (!value) {
+    return null;
+  }
+  const [a, b] = value.split("-").map(Number);
+  return { a, b };
+}
+
+function buildProjectDetailUrl(projectId) {
+  const url = new URL("./project-detail.html", window.location.href);
+  url.searchParams.set("projectId", projectId);
+  url.searchParams.set("from", "./transparent-house-prototype.html");
+  return url.toString();
+}
+
+function filtered() {
+  const query = state.q.trim().toLowerCase();
+  const priceRange = rng(state.f.price);
+  const areaRange = rng(state.f.area);
+  const room = state.f.room ? Number(state.f.room) : null;
+
+  return properties.filter((property) => {
+    const matchesQuery = !query || property.name.toLowerCase().includes(query);
+    const matchesRegion = !state.f.region || property.district === state.f.region;
+    const matchesPrice = !priceRange || (property.priceMin < priceRange.b && property.priceMax >= priceRange.a);
+    const matchesArea = !areaRange || (property.areaMin < areaRange.b && property.areaMax >= areaRange.a);
+    const matchesMore = !state.f.more || property.deco === state.f.more;
+    const matchesRoom = !room
+      || property.layout.some((item) => item.startsWith(`${room}室`))
+      || (room === 4 && property.layout.some((item) => /^([45])室/.test(item)));
+
+    return matchesQuery && matchesRegion && matchesPrice && matchesArea && matchesMore && matchesRoom;
   });
 }
-function renderHome(){
-  const list=filtered();$("homeTip").textContent=`共 ${list.length} 个楼盘`;
-  $("homeList").innerHTML=list.length?list.map(p=>`
-    <article class="item" data-id="${p.id}">
-      <div class="img ${p.img}"></div>
-      <div>
-        <h4>${p.name}</h4>
-        <div class="price">${p.priceMin}~${p.priceMax}元/㎡</div>
-        <div class="meta">${p.district} / ${p.areaMin}~${p.areaMax}㎡</div>
-        <div class="tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
-      </div>
-      <div class="stock"><b>${p.stock}</b><span>在售套数</span></div>
-    </article>`).join(""):'<div class="empty">未找到匹配楼盘，请调整搜索或筛选条件</div>';
-}
-function trend(region){
-  const u=[],p=[];months.forEach(m=>{const row=marketData[m].find(x=>x.region===region);u.push(row.units);p.push(row.avgPrice)});return{u,p}
-}
-function drawBars(canvas,vals,color,yFmt,topFmt){
-  const c=canvas.getContext("2d"),dpr=window.devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;
-  canvas.width=w*dpr;canvas.height=h*dpr;c.scale(dpr,dpr);c.clearRect(0,0,w,h);
-  const L=28,R=w-8,T=16,B=h-28,CW=R-L,CH=B-T,max=Math.max(...vals),safeMax=max||1;
-  c.strokeStyle="#e6eefc";
-  for(let i=0;i<=4;i++){const y=T+CH*i/4;c.beginPath();c.moveTo(L,y);c.lineTo(R,y);c.stroke()}
-  c.fillStyle="#7b8ca8";c.font="10px sans-serif";
-  c.fillText(yFmt(safeMax),0,T+3);
-  c.fillText(yFmt(Math.round(safeMax/2)),0,T+CH/2+3);
-  c.fillText(yFmt(0),0,B+3);
 
-  const slot=CW/vals.length,barW=Math.max(10,Math.min(18,slot*0.58));
-  vals.forEach((v,i)=>{
-    const x=L+i*slot+(slot-barW)/2;
-    const y=B-(v/safeMax)*CH;
-    c.fillStyle=color;
-    c.fillRect(x,y,barW,B-y);
-    c.fillStyle="#4f6485";
-    c.font="8.5px sans-serif";
-    c.fillText(topFmt(v),x-2,Math.max(y-4,10));
-    c.fillStyle="#7b8ca8";
-    c.font="9px sans-serif";
-    c.fillText(months[i].slice(5),x-2,h-9);
+function renderHome() {
+  const list = filtered();
+  $("homeTip").textContent = `共 ${list.length} 个楼盘`;
+  $("homeList").innerHTML = list.length
+    ? list.map((property) => `
+      <article class="item" data-id="${property.id}">
+        <div class="img ${property.img}"></div>
+        <div>
+          <h4>${property.name}</h4>
+          <div class="price">${property.priceMin}~${property.priceMax}元/㎡</div>
+          <div class="meta">${property.district} / ${property.areaMin}~${property.areaMax}㎡</div>
+          <div class="tags">${property.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}</div>
+        </div>
+        <div class="stock"><b>${property.stock}</b><span>在售套数</span></div>
+      </article>
+    `).join("")
+    : '<div class="empty">未找到匹配楼盘，请调整搜索或筛选条件</div>';
+}
+
+function trend(region) {
+  const units = [];
+  const prices = [];
+  months.forEach((month) => {
+    const row = marketData[month].find((item) => item.region === region);
+    units.push(row.units);
+    prices.push(row.avgPrice);
+  });
+  return { units, prices };
+}
+
+function drawBars(canvas, values, color, yFormatter, topFormatter) {
+  const context = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  context.scale(dpr, dpr);
+  context.clearRect(0, 0, width, height);
+
+  const left = 28;
+  const right = width - 8;
+  const top = 16;
+  const bottom = height - 28;
+  const chartWidth = right - left;
+  const chartHeight = bottom - top;
+  const maxValue = Math.max(...values, 0);
+  const safeMax = maxValue || 1;
+
+  context.strokeStyle = "#e6eefc";
+  for (let index = 0; index <= 4; index += 1) {
+    const y = top + (chartHeight * index) / 4;
+    context.beginPath();
+    context.moveTo(left, y);
+    context.lineTo(right, y);
+    context.stroke();
+  }
+
+  context.fillStyle = "#7b8ca8";
+  context.font = "10px sans-serif";
+  context.fillText(yFormatter(safeMax), 0, top + 3);
+  context.fillText(yFormatter(Math.round(safeMax / 2)), 0, top + chartHeight / 2 + 3);
+  context.fillText(yFormatter(0), 0, bottom + 3);
+
+  const slot = chartWidth / values.length;
+  const barWidth = Math.max(10, Math.min(18, slot * 0.58));
+  values.forEach((value, index) => {
+    const x = left + index * slot + (slot - barWidth) / 2;
+    const y = bottom - (value / safeMax) * chartHeight;
+    context.fillStyle = color;
+    context.fillRect(x, y, barWidth, bottom - y);
+    context.fillStyle = "#4f6485";
+    context.font = "8.5px sans-serif";
+    context.fillText(topFormatter(value), x - 2, Math.max(y - 4, 10));
+    context.fillStyle = "#7b8ca8";
+    context.font = "9px sans-serif";
+    context.fillText(months[index].slice(5), x - 2, height - 9);
   });
 }
-function renderMonthChips(targetId,vals,suffix,fmt){
-  $(targetId).innerHTML=months.map((m,i)=>`<span class="chip"><b>${m.slice(2)}</b>${fmt(vals[i])}${suffix}</span>`).join("");
+
+function renderMonthChips(targetId, values, suffix, formatter) {
+  $(targetId).innerHTML = months.map((month, index) => `
+    <span class="chip"><b>${month.slice(2)}</b>${formatter(values[index])}${suffix}</span>
+  `).join("");
 }
-function renderMarket(){
-  const m=$("monthSel").value,rows=marketData[m];
-  $("marketBody").innerHTML=rows.map(r=>`<tr><td>${r.region}</td><td>${num(r.units)}</td><td>${num(r.area)}</td><td>${num(r.avgPrice)}</td><td>${num(r.avgTotal)}</td></tr>`).join("");
-  const t=trend($("areaSel").value);
-  drawBars($("cUnits"),t.u,"#1f6dff",v=>Math.round(v)+"套",v=>Math.round(v));
-  drawBars($("cPrice"),t.p,"#19a571",v=>(v/10000).toFixed(1)+"万",v=>(v/10000).toFixed(1)+"万");
-  renderMonthChips("cUnitsData",t.u,"套",v=>num(v));
-  renderMonthChips("cPriceData",t.p,"元/㎡",v=>num(v));
+
+function renderMarket() {
+  const month = $("monthSel").value;
+  const rows = marketData[month];
+  $("marketBody").innerHTML = rows.map((row) => `
+    <tr>
+      <td>${row.region}</td>
+      <td>${num(row.units)}</td>
+      <td>${num(row.area)}</td>
+      <td>${num(row.avgPrice)}</td>
+      <td>${num(row.avgTotal)}</td>
+    </tr>
+  `).join("");
+
+  const series = trend($("areaSel").value);
+  drawBars($("cUnits"), series.units, "#1f6dff", (value) => `${Math.round(value)}套`, (value) => Math.round(value));
+  drawBars($("cPrice"), series.prices, "#19a571", (value) => `${(value / 10000).toFixed(1)}万`, (value) => `${(value / 10000).toFixed(1)}万`);
+  renderMonthChips("cUnitsData", series.units, "套", (value) => num(value));
+  renderMonthChips("cPriceData", series.prices, "元/㎡", (value) => num(value));
 }
-function renderDeals(){
-  const q=$("dealSearch").value.trim().toLowerCase();
-  const list=[...properties].filter(p=>!q||p.name.toLowerCase().includes(q)).sort((a,b)=>b.signed30-a.signed30);
-  $("dealTip").textContent=`共 ${list.length} 条成交记录`;
-  $("dealList").innerHTML=list.length?list.map(p=>`
-    <article class="deal">
-      <div class="count"><b>${p.signed30}</b><span>近30天网签套数</span></div>
-      <div><h4>${p.name}</h4><p>备案价：${p.record}</p><button class="btn" data-report="${p.id}">咨询详细报告</button></div>
-    </article>`).join(""):'<div class="empty">未匹配到楼盘成交数据</div>';
+
+function renderDeals() {
+  const query = $("dealSearch").value.trim().toLowerCase();
+  const list = [...properties]
+    .filter((property) => !query || property.name.toLowerCase().includes(query))
+    .sort((a, b) => b.signed30 - a.signed30);
+
+  $("dealTip").textContent = `共 ${list.length} 条成交记录`;
+  $("dealList").innerHTML = list.length
+    ? list.map((property) => `
+      <article class="deal">
+        <div class="count"><b>${property.signed30}</b><span>近30天网签套数</span></div>
+        <div>
+          <h4>${property.name}</h4>
+          <p>备案价：${property.record}</p>
+          <button class="btn" data-report="${property.id}">咨询详细报告</button>
+        </div>
+      </article>
+    `).join("")
+    : '<div class="empty">未匹配到楼盘成交数据</div>';
 }
-function openQrModal(projectName){
-  $("qrProjectTitle").textContent=`${projectName} 详细报告咨询`;
+
+function openQrModal(projectName) {
+  $("qrProjectTitle").textContent = `${projectName} 详细报告咨询`;
   $("qrModal").classList.add("show");
 }
-function closeQrModal(){
+
+function closeQrModal() {
   $("qrModal").classList.remove("show");
 }
-function renderDetail(){
-  const p=properties.find(x=>x.id===state.detail)||properties[0],sold=Math.max(p.total-p.stock,0),rate=p.total?sold/p.total*100:0;
-  $("dName").textContent=p.name;$("dDistrict").textContent=p.district;$("hero").className=`hero ${p.img}`;
-  $("dTotal").textContent=num(p.total)+" 套";$("dSign").textContent=num(p.signed30)+" 套";$("dStock").textContent=num(p.stock)+" 套";$("dRate").textContent=rate.toFixed(2)+"%";$("dBar").style.width=Math.min(rate,100)+"%";
-  const baseInfo=[["参考单价",p.record],["开盘楼栋",p.open],["建筑面积",`${p.areaMin}~${p.areaMax}㎡`],["所属区域",p.district]];
-  $("baseGrid").innerHTML=baseInfo.map(x=>`<div class="k"><label>${x[0]}</label><b>${x[1]}</b></div>`).join("");
-  $("layoutCards").innerHTML=p.layout.map(x=>{const sp=x.split(" ");return`<div class="m"><h5>${sp[0]}</h5><p>${sp[1]||""}</p></div>`}).join("");
-  $("priceCards").innerHTML=p.layout.slice(0,2).map((x,i)=>{const u=p.priceMin+(i+1)*Math.round((p.priceMax-p.priceMin)/3);return`<div class="m"><h5>${Math.round(u/10000*95)}万</h5><p>${x}</p><p>单价约 ${u} 元/㎡</p></div>`}).join("");
-  $("intro").textContent=p.intro;
-}
-function setTop(page){
-  const map={home:["透明房产",0],market:["新房行情",1],deals:["楼盘成交",1],detail:["楼盘详情",1]};
-  $("ht").textContent=map[page][0];$("back").style.display=map[page][1]?"inline-flex":"none";
-}
-function go(page,push=true){
-  if(page===state.page)return;if(push)state.stack.push(state.page);state.page=page;
-  ["home","market","deals","detail"].forEach(x=>$(`p-${x}`).classList.toggle("active",x===page));setTop(page);
-  if(page==="market")renderMarket();if(page==="deals")renderDeals();if(page==="detail")renderDetail();
-}
-function back(){const p=state.stack.pop()||"home";state.page=p;["home","market","deals","detail"].forEach(x=>$(`p-${x}`).classList.toggle("active",x===p));setTop(p);if(p==="market")renderMarket();if(p==="deals")renderDeals();if(p==="detail")renderDetail();}
 
-function init(){
-  const regions=[...new Set(properties.map(p=>p.district))];
-  $("fRegion").innerHTML='<option value="">区域</option>'+regions.map(r=>`<option value="${r}">${r}</option>`).join("");
-  $("monthSel").innerHTML=months.map(m=>`<option value="${m}">${m} 数据</option>`).join("");$("monthSel").value="2026-02";
-  $("areaSel").innerHTML=base.map(b=>`<option value="${b.region}">${b.region}</option>`).join("");$("areaSel").value="成都市";
-  const jan=marketData["2026-01"].find(x=>x.region==="成都市"),feb=marketData["2026-02"].find(x=>x.region==="成都市"),rate=((feb.units-jan.units)/jan.units*100).toFixed(0);
-  $("mUnits").textContent=feb.units;$("mRate").textContent=(rate>0?"+":"")+rate+"%";
-  const top=[...properties].sort((a,b)=>b.signed30-a.signed30)[0];$("topName").textContent=top.name;$("topCount").textContent=top.signed30+"套";
+function renderDetail() {
+  const property = properties.find((item) => item.id === state.detail) || properties[0];
+  const sold = Math.max(property.total - property.stock, 0);
+  const rate = property.total ? sold / property.total * 100 : 0;
+  const baseInfo = [
+    ["参考单价", property.record],
+    ["开盘楼栋", property.open],
+    ["建筑面积", `${property.areaMin}~${property.areaMax}㎡`],
+    ["所属区域", property.district]
+  ];
+
+  $("dName").textContent = property.name;
+  $("dDistrict").textContent = property.district;
+  $("hero").className = `hero ${property.img}`;
+  $("dTotal").textContent = `${num(property.total)} 套`;
+  $("dSign").textContent = `${num(property.signed30)} 套`;
+  $("dStock").textContent = `${num(property.stock)} 套`;
+  $("dRate").textContent = `${rate.toFixed(2)}%`;
+  $("dBar").style.width = `${Math.min(rate, 100)}%`;
+  $("baseGrid").innerHTML = baseInfo.map(([label, value]) => `
+    <div class="k"><label>${label}</label><b>${value}</b></div>
+  `).join("");
+  $("layoutCards").innerHTML = property.layout.map((item) => {
+    const [title, desc = ""] = item.split(" ");
+    return `<div class="m"><h5>${title}</h5><p>${desc}</p></div>`;
+  }).join("");
+  $("priceCards").innerHTML = property.layout.slice(0, 2).map((item, index) => {
+    const unitPrice = property.priceMin + (index + 1) * Math.round((property.priceMax - property.priceMin) / 3);
+    return `
+      <div class="m">
+        <h5>${Math.round(unitPrice / 10000 * 95)}万</h5>
+        <p>${item}</p>
+        <p>单价约 ${unitPrice} 元/㎡</p>
+      </div>
+    `;
+  }).join("");
+  $("intro").textContent = property.intro;
+}
+
+function setTop(page) {
+  const titles = {
+    home: ["透明房产", 0],
+    market: ["新房行情", 1],
+    deals: ["楼盘成交", 1],
+    detail: ["楼盘详情", 1]
+  };
+  $("ht").textContent = titles[page][0];
+  $("back").style.display = titles[page][1] ? "inline-flex" : "none";
+}
+
+function go(page, push = true) {
+  if (page === state.page) {
+    return;
+  }
+  if (push) {
+    state.stack.push(state.page);
+  }
+  state.page = page;
+  ["home", "market", "deals", "detail"].forEach((item) => $(`p-${item}`).classList.toggle("active", item === page));
+  setTop(page);
+  if (page === "market") {
+    renderMarket();
+  }
+  if (page === "deals") {
+    renderDeals();
+  }
+  if (page === "detail") {
+    renderDetail();
+  }
+}
+
+function back() {
+  const page = state.stack.pop() || "home";
+  state.page = page;
+  ["home", "market", "deals", "detail"].forEach((item) => $(`p-${item}`).classList.toggle("active", item === page));
+  setTop(page);
+  if (page === "market") {
+    renderMarket();
+  }
+  if (page === "deals") {
+    renderDeals();
+  }
+  if (page === "detail") {
+    renderDetail();
+  }
+}
+
+function init() {
+  const regions = [...new Set(properties.map((property) => property.district))];
+  const jan = marketData["2026-01"].find((item) => item.region === "成都市");
+  const feb = marketData["2026-02"].find((item) => item.region === "成都市");
+  const monthRate = ((feb.units - jan.units) / jan.units * 100).toFixed(0);
+  const topDeal = [...properties].sort((a, b) => b.signed30 - a.signed30)[0];
+
+  $("fRegion").innerHTML = '<option value="">区域</option>' + regions.map((region) => `<option value="${region}">${region}</option>`).join("");
+  $("monthSel").innerHTML = months.map((month) => `<option value="${month}">${month} 数据</option>`).join("");
+  $("monthSel").value = "2026-02";
+  $("areaSel").innerHTML = base.map((item) => `<option value="${item.region}">${item.region}</option>`).join("");
+  $("areaSel").value = "成都市";
+  $("mUnits").textContent = feb.units;
+  $("mRate").textContent = `${monthRate > 0 ? "+" : ""}${monthRate}%`;
+  $("topName").textContent = topDeal.name;
+  $("topCount").textContent = `${topDeal.signed30}套`;
   renderHome();
 
-  document.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>go(el.dataset.go));
-  $("homeSearch").oninput=e=>{state.q=e.target.value;renderHome()};
-  [["fRegion","region"],["fPrice","price"],["fRoom","room"],["fArea","area"],["fMore","more"]].forEach(([id,key])=>$(id).onchange=e=>{state.f[key]=e.target.value;renderHome()});
-  $("homeList").onclick=e=>{const item=e.target.closest(".item");if(!item)return;state.detail=item.dataset.id;go("detail")};
-  $("monthSel").onchange=renderMarket;$("areaSel").onchange=renderMarket;$("dealSearch").oninput=renderDeals;
-  $("dealList").onclick=e=>{const b=e.target.closest("[data-report]");if(!b)return;const p=properties.find(x=>x.id===b.dataset.report);openQrModal(p.name)};
-  $("qrClose").onclick=closeQrModal;
-  $("qrModal").onclick=e=>{if(e.target.id==="qrModal")closeQrModal()};
-  $("back").onclick=back;window.onresize=()=>state.page==="market"&&renderMarket();
+  document.querySelectorAll("[data-go]").forEach((element) => {
+    element.onclick = () => go(element.dataset.go);
+  });
+  $("homeSearch").oninput = (event) => {
+    state.q = event.target.value;
+    renderHome();
+  };
+  [["fRegion", "region"], ["fPrice", "price"], ["fRoom", "room"], ["fArea", "area"], ["fMore", "more"]].forEach(([id, key]) => {
+    $(id).onchange = (event) => {
+      state.f[key] = event.target.value;
+      renderHome();
+    };
+  });
+  $("homeList").onclick = (event) => {
+    const item = event.target.closest(".item");
+    if (!item) {
+      return;
+    }
+    window.location.href = buildProjectDetailUrl(item.dataset.id);
+  };
+  $("mapBtn").onclick = () => {
+    window.location.href = "./index.html";
+  };
+  $("monthSel").onchange = renderMarket;
+  $("areaSel").onchange = renderMarket;
+  $("dealSearch").oninput = renderDeals;
+  $("dealList").onclick = (event) => {
+    const button = event.target.closest("[data-report]");
+    if (!button) {
+      return;
+    }
+    const property = properties.find((item) => item.id === button.dataset.report);
+    if (property) {
+      openQrModal(property.name);
+    }
+  };
+  $("qrClose").onclick = closeQrModal;
+  $("qrModal").onclick = (event) => {
+    if (event.target.id === "qrModal") {
+      closeQrModal();
+    }
+  };
+  $("back").onclick = back;
+  window.onresize = () => {
+    if (state.page === "market") {
+      renderMarket();
+    }
+  };
 }
+
 init();
 </script>
 </body>

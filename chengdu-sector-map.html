@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>成都板块地图选房</title>
+  <link rel="stylesheet" href="./chengdu-sector-map.css">
+</head>
+<body>
+  <main class="mobile-shell">
+    <section class="phone-app sheet-collapsed">
+      <div class="map-stage">
+        <header class="map-header">
+          <button id="navBackButton" class="nav-button nav-button--back" type="button" aria-label="返回">
+            <span class="nav-icon nav-icon--back" aria-hidden="true"></span>
+            <span>返回</span>
+          </button>
+          <h1 class="nav-title">成都区域板块地图</h1>
+          <button id="navCloseButton" class="nav-button nav-button--close" type="button" aria-label="关闭">
+            <span class="nav-icon nav-icon--close" aria-hidden="true"></span>
+          </button>
+        </header>
+
+        <div class="legend-rail" id="legendRail"></div>
+
+        <div class="map-visual">
+          <svg id="sectorMap" viewBox="0 0 1080 1450" preserveAspectRatio="xMidYMin meet" aria-label="成都板块图"></svg>
+          <div class="map-controls">
+            <button id="zoomInButton" type="button" aria-label="放大">+</button>
+            <button id="zoomOutButton" type="button" aria-label="缩小">-</button>
+            <button id="resetViewButton" type="button" aria-label="重置视图">重置</button>
+          </div>
+        </div>
+      </div>
+
+      <section id="bottomSheet" class="bottom-sheet is-collapsed" aria-label="板块详情抽屉" aria-hidden="true" hidden>
+        <div class="sheet-handle" aria-hidden="true"></div>
+
+        <div class="sheet-header">
+          <div class="sheet-header__text">
+            <span class="sheet-kicker">当前板块</span>
+            <h2 id="sheetTitle">金融城</h2>
+            <p id="sheetSubtitle">核心商务区 · 4.6万-6.5万/㎡</p>
+          </div>
+          <button id="sheetToggle" class="sheet-toggle" type="button" aria-expanded="true">收起</button>
+        </div>
+
+        <div class="sheet-scroller">
+          <section class="sheet-section">
+            <div class="metric-grid" id="sheetMetrics"></div>
+          </section>
+
+          <section class="sheet-section">
+            <div class="section-title">
+              <h3>全部板块</h3>
+              <span>点击切换</span>
+            </div>
+            <div class="sector-chip-row" id="sectorChipRow"></div>
+          </section>
+
+          <section class="sheet-section">
+            <div class="section-title">
+              <h3>板块介绍</h3>
+            </div>
+            <p id="sheetDescription" class="sheet-description"></p>
+          </section>
+
+          <section class="sheet-section">
+            <div class="section-title">
+              <h3>推荐楼盘</h3>
+              <span id="projectCount"></span>
+            </div>
+            <div class="project-list" id="projectList"></div>
+          </section>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="./chengdu-sector-map.js"></script>
+</body>
+</html>
