@@ -216,7 +216,7 @@
 
   <section id="p-market" class="page">
     <div class="title">新房行情</div>
-    <div class="ctrl"><select id="monthSel"></select><select id="areaSel"></select></div>
+    <div class="ctrl single"><select id="areaSel"></select></div>
     <div class="table"><table>
       <thead><tr><th>区域</th><th>成交套数</th><th>成交面积（㎡）</th><th>参考成交均价（元/㎡）</th><th>套均成交总价（万元）</th></tr></thead>
       <tbody id="marketBody"></tbody>
@@ -506,7 +506,7 @@ function renderMonthChips(targetId, values, suffix, formatter) {
 }
 
 function renderMarket() {
-  const month = $("monthSel").value;
+  const month = "2026-02";
   const rows = marketData[month];
   $("marketBody").innerHTML = rows.map((row) => `
     <tr>
@@ -550,7 +550,7 @@ function renderDeals() {
             <b>${record.totalPriceText}</b>
           </div>
         </div>
-        <button class="btn deal-btn" data-price-consult="${record.id}">咨询具体网签价格</button>
+        <button class="btn deal-btn" data-price-consult="${record.id}">咨询项目报告</button>
       </article>
     `).join("")
     : '<div class="empty">未匹配到楼盘成交数据</div>';
@@ -660,8 +660,6 @@ function init() {
   const topDeal = [...properties].sort((a, b) => b.signed30 - a.signed30)[0];
 
   $("fRegion").innerHTML = '<option value="">区域</option>' + regions.map((region) => `<option value="${region}">${region}</option>`).join("");
-  $("monthSel").innerHTML = months.map((month) => `<option value="${month}">${month} 数据</option>`).join("");
-  $("monthSel").value = "2026-02";
   $("areaSel").innerHTML = base.map((item) => `<option value="${item.region}">${item.region}</option>`).join("");
   $("areaSel").value = "成都市";
   $("mUnits").textContent = feb.units;
@@ -693,7 +691,6 @@ function init() {
   $("mapBtn").onclick = () => {
     window.location.href = "./index.html";
   };
-  $("monthSel").onchange = renderMarket;
   $("areaSel").onchange = renderMarket;
   $("dealSearch").oninput = renderDeals;
   $("dealList").onclick = (event) => {
