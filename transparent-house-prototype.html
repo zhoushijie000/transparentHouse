@@ -141,12 +141,16 @@
     .chart-data{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:9px}
     .chip{background:#f5f8ff;border:1px solid #e2eafb;border-radius:8px;padding:4px 6px;font-size:11px;color:#5c6f8e}
     .chip b{display:block;font-size:11px;color:#24395d;margin-bottom:1px}
-    .deal{display:grid;grid-template-columns:90px 1fr;gap:9px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px}
-    .count{border-radius:10px;background:linear-gradient(180deg,#ebf3ff,#dce8ff);display:flex;flex-direction:column;justify-content:center;align-items:center;color:#2959af}
-    .count b{font-size:26px;line-height:1}
-    .count span{font-size:12px;color:#657fac}
-    .deal h4{margin:0 0 6px;font-size:16px}
-    .deal p{margin:0 0 8px;font-size:14px;color:#516381}
+    .deal{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+    .deal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .deal h4{margin:0 0 4px;font-size:16px}
+    .deal-house{margin:0;color:#516381;font-size:13px;line-height:1.5}
+    .deal-time{flex:0 0 auto;padding:4px 8px;border-radius:999px;background:#eef4ff;color:#4f6b99;font-size:11px}
+    .deal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+    .deal-meta{background:#f6f9ff;border-radius:10px;padding:8px 10px}
+    .deal-meta label{display:block;font-size:11px;color:#7284a2;margin-bottom:4px}
+    .deal-meta b{font-size:14px;color:#22395c}
+    .deal-btn{width:100%}
     .btn{height:32px;padding:0 12px;font-size:13px}
     .hero{height:190px;border-radius:12px;background:linear-gradient(130deg,#155290,#3a88cf,#8ec8f1);padding:12px;color:#fff;display:flex;align-items:flex-end;margin-bottom:10px}
     .hero h3{margin:0 0 4px;font-size:20px}
@@ -238,7 +242,7 @@
   </section>
 
   <section id="p-deals" class="page">
-    <div class="ctrl single"><input id="dealSearch" placeholder="搜索楼盘名称"></div>
+    <div class="ctrl single"><input id="dealSearch" placeholder="搜索项目名或房号"></div>
     <div id="dealTip" class="tip"></div>
     <div id="dealList" class="list"></div>
   </section>
@@ -308,6 +312,15 @@ months.forEach((month, index) => {
   });
 });
 
+const dealPatterns = [
+  { building: 1, unit: 1, floor: 6, roomSeq: 1, priceDelta: -300 },
+  { building: 1, unit: 2, floor: 9, roomSeq: 2, priceDelta: -80 },
+  { building: 2, unit: 1, floor: 12, roomSeq: 1, priceDelta: 120 },
+  { building: 2, unit: 2, floor: 15, roomSeq: 2, priceDelta: 260 },
+  { building: 3, unit: 1, floor: 18, roomSeq: 1, priceDelta: 420 },
+  { building: 3, unit: 2, floor: 22, roomSeq: 2, priceDelta: 680 }
+];
+
 const state = {
   page: "home",
   stack: [],
@@ -322,6 +335,10 @@ function num(value) {
   return Number(value).toLocaleString("zh-CN");
 }
 
+function pad2(value) {
+  return String(value).padStart(2, "0");
+}
+
 function rng(value) {
   if (!value) {
     return null;
@@ -329,6 +346,50 @@ function rng(value) {
   const [a, b] = value.split("-").map(Number);
   return { a, b };
 }
+
+function parseAreaValue(layoutText) {
+  const match = layoutText.match(/(\d+(?:\.\d+)?)㎡/);
+  return match ? Number(match[1]) : 89;
+}
+
+function formatTotalPrice(totalPrice) {
+  return `${(totalPrice / 10000).toFixed(1)}万`;
+}
+
+function buildDealRecords() {
+  return properties.flatMap((property, propertyIndex) => {
+    const spread = Math.max(property.priceMax - property.priceMin, 1200);
+
+    return dealPatterns.map((pattern, patternIndex) => {
+      const layoutText = property.layout[patternIndex % property.layout.length];
+      const area = parseAreaValue(layoutText);
+      const unitPrice = Math.max(
+        property.priceMin,
+        Math.min(
+          property.priceMax,
+          property.priceMin + Math.round((spread * (patternIndex + 1)) / (dealPatterns.length + 1)) + pattern.priceDelta
+        )
+      );
+      const totalPrice = Math.round(area * unitPrice);
+      const day = 28 - ((propertyIndex * dealPatterns.length + patternIndex) % 18);
+      const roomNo = `${pattern.floor}${pad2(pattern.roomSeq)}`;
+
+      return {
+        id: `${property.id}-deal-${patternIndex + 1}`,
+        projectId: property.id,
+        projectName: property.name,
+        district: property.district,
+        roomLabel: `${pattern.building}栋-${pattern.unit}单元-${pattern.floor}层-${roomNo}`,
+        areaText: `${area}㎡`,
+        totalPriceText: `${formatTotalPrice(totalPrice)}（约${num(unitPrice)}元/㎡）`,
+        signTime: `2026-03-${pad2(day)} 10:${pad2((propertyIndex * 7 + patternIndex * 3) % 60)}`,
+        searchText: `${property.name} ${pattern.building}栋 ${pattern.unit}单元 ${pattern.floor}层 ${roomNo}`.toLowerCase()
+      };
+    });
+  }).sort((left, right) => right.signTime.localeCompare(left.signTime));
+}
+
+const dealRecords = buildDealRecords();
 
 function buildProjectDetailUrl(projectId) {
   const url = new URL("./project-detail.html", window.location.href);
@@ -466,20 +527,30 @@ function renderMarket() {
 
 function renderDeals() {
   const query = $("dealSearch").value.trim().toLowerCase();
-  const list = [...properties]
-    .filter((property) => !query || property.name.toLowerCase().includes(query))
-    .sort((a, b) => b.signed30 - a.signed30);
+  const list = dealRecords.filter((record) => !query || record.searchText.includes(query));
 
-  $("dealTip").textContent = `共 ${list.length} 条成交记录`;
+  $("dealTip").textContent = `共 ${list.length} 套网签记录`;
   $("dealList").innerHTML = list.length
-    ? list.map((property) => `
+    ? list.map((record) => `
       <article class="deal">
-        <div class="count"><b>${property.signed30}</b><span>近30天网签套数</span></div>
-        <div>
-          <h4>${property.name}</h4>
-          <p>备案价：${property.record}</p>
-          <button class="btn" data-report="${property.id}">咨询详细报告</button>
+        <div class="deal-head">
+          <div>
+            <h4>${record.projectName}</h4>
+            <p class="deal-house">${record.roomLabel}</p>
+          </div>
+          <span class="deal-time">${record.signTime}</span>
         </div>
+        <div class="deal-grid">
+          <div class="deal-meta">
+            <label>面积</label>
+            <b>${record.areaText}</b>
+          </div>
+          <div class="deal-meta">
+            <label>备案价</label>
+            <b>${record.totalPriceText}</b>
+          </div>
+        </div>
+        <button class="btn deal-btn" data-price-consult="${record.id}">咨询具体网签价格</button>
       </article>
     `).join("")
     : '<div class="empty">未匹配到楼盘成交数据</div>';
@@ -626,14 +697,11 @@ function init() {
   $("areaSel").onchange = renderMarket;
   $("dealSearch").oninput = renderDeals;
   $("dealList").onclick = (event) => {
-    const button = event.target.closest("[data-report]");
+    const button = event.target.closest("[data-price-consult]");
     if (!button) {
       return;
     }
-    const property = properties.find((item) => item.id === button.dataset.report);
-    if (property) {
-      openQrModal(property.name);
-    }
+    window.alert("该功能暂未开放");
   };
   $("qrClose").onclick = closeQrModal;
   $("qrModal").onclick = (event) => {
