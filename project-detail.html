@@ -3,61 +3,269 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>楼盘详情</title>
+  <title>楼盘详情 - 透明房产</title>
   <link rel="stylesheet" href="./project-detail.css">
 </head>
 <body>
-  <main class="detail-shell">
-    <section class="detail-app">
-      <div id="svgStage" class="svg-stage">
-        <object
-          id="detailSvgObject"
-          class="detail-svg"
-          type="image/svg+xml"
-          data="./project-detail-design.svg"
-          aria-label="楼盘详情设计图"
-        ></object>
+  <div class="detail-shell">
+    <article class="detail-app project-detail-page">
+      <header class="detail-nav" aria-label="顶部导航">
+        <div class="detail-nav__inner">
+          <button id="backButton" class="nav-back" type="button" aria-label="返回">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M15.4 5.4 8.8 12l6.6 6.6-1.8 1.8L5.2 12l8.4-8.4 1.8 1.8Z"></path>
+            </svg>
+          </button>
+          <h1 class="detail-nav__title">项目详情</h1>
+          <div class="mini-capsule" aria-hidden="true">
+            <span class="mini-dot mini-dot--small"></span>
+            <span class="mini-dot"></span>
+            <span class="mini-dot mini-dot--small"></span>
+            <i></i>
+            <span class="mini-close"></span>
+          </div>
+        </div>
+      </header>
 
-        <button id="backHotspot" class="hotspot hotspot--back" type="button" aria-label="返回"></button>
-        <button id="followHotspot" class="hotspot hotspot--follow" type="button" aria-label="关注楼盘"></button>
-        <button id="expandHotspot" class="hotspot hotspot--expand" type="button" aria-label="展开全部信息"></button>
-      </div>
+      <main class="detail-content">
+        <section class="hero-card" aria-labelledby="projectName">
+          <div id="heroMedia" class="hero-media" role="button" tabindex="0" aria-label="打开楼盘相册">
+            <img id="heroImage" class="hero-media__image" alt="项目图片">
+            <div class="hero-media__shade"></div>
+            <span id="statusBadge" class="status-badge">在售</span>
+            <button id="albumButton" class="album-button" type="button">楼盘相册</button>
+            <div id="mediaTabs" class="media-tabs" aria-label="图片类型切换">
+              <button class="media-tab is-active" data-media-kind="effect" type="button">效果图</button>
+              <button class="media-tab" data-media-kind="plan" type="button">总平图</button>
+              <button class="media-tab" data-media-kind="layout" type="button">户型图</button>
+              <button class="media-tab" data-media-kind="location" type="button">区位图</button>
+              <button class="media-tab" data-media-kind="real" type="button">实景图</button>
+            </div>
+          </div>
 
-      <div class="bottom-actions">
+          <div class="summary-card">
+            <div class="summary-card__head">
+              <div>
+                <p id="districtText" class="eyebrow">成都 · 在售住宅</p>
+                <h2 id="projectName">楼盘名称</h2>
+              </div>
+              <button id="followButton" class="follow-button" type="button">关注</button>
+            </div>
+            <div class="summary-location-row">
+              <span class="summary-pin" aria-hidden="true"></span>
+              <strong id="summaryDistrict">成华区</strong>
+              <button class="mini-link" type="button">楼盘</button>
+              <button class="mini-link" type="button">售楼部</button>
+            </div>
+            <div id="tagList" class="tag-list"></div>
+            <div class="price-panel">
+              <div>
+                <span id="priceLabel" class="price-panel__label">参考价格</span>
+                <strong id="priceText">--</strong>
+              </div>
+              <a id="phonePill" class="phone-pill" href="tel:4000000000">电话咨询</a>
+            </div>
+            <p id="introText" class="intro-text"></p>
+          </div>
+        </section>
+
+        <section class="quick-entry-grid" aria-label="楼盘快捷入口">
+          <button class="quick-entry" data-detail-tab="layout" type="button">
+            <span class="quick-entry__icon quick-entry__icon--red" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 5h7v7H4zM13 5h7v14h-7zM4 14h7v5H4z"></path></svg>
+            </span>
+            <strong>户型图</strong>
+          </button>
+          <button class="quick-entry" data-detail-tab="price" type="button">
+            <span class="quick-entry__icon quick-entry__icon--orange" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M6 7h12v13H6zM8 4h8l2 3H6zM9 11h6M9 15h6M12 9v8"></path></svg>
+            </span>
+            <strong>一房一价</strong>
+          </button>
+          <button class="quick-entry" data-detail-tab="basic" type="button">
+            <span class="quick-entry__icon quick-entry__icon--green" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M6 4h11l1 1v15H6zM9 9h6M9 13h6M9 17h4"></path></svg>
+            </span>
+            <strong>楼盘信息</strong>
+          </button>
+          <button class="quick-entry" data-detail-tab="support" type="button">
+            <span class="quick-entry__icon quick-entry__icon--blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11z"></path><path d="M12 7v5l3 2"></path></svg>
+            </span>
+            <strong>周边配套</strong>
+          </button>
+          <button class="quick-entry" data-action="open-album" type="button">
+            <span class="quick-entry__icon quick-entry__icon--purple" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"></path><path d="m7 15 3-3 3 2 2-3 3 4"></path><path d="M8 9h.01"></path></svg>
+            </span>
+            <strong>楼盘相册</strong>
+          </button>
+        </section>
+
+        <nav id="detailTabs" class="detail-tabs" aria-label="详情内容切换">
+          <button class="detail-tab is-active" data-detail-tab="basic" type="button">基本信息</button>
+          <button class="detail-tab" data-detail-tab="layout" type="button">户型图</button>
+          <button class="detail-tab" data-detail-tab="price" type="button">一房一价</button>
+          <button class="detail-tab" data-detail-tab="support" type="button">楼盘配套</button>
+        </nav>
+
+        <section class="tab-panel is-active" data-tab-panel="basic">
+          <section class="section-card">
+            <div class="section-title">
+              <span></span>
+              <div>
+                <p>Basic</p>
+                <h3>楼盘基本信息</h3>
+              </div>
+            </div>
+            <div id="infoRows" class="info-rows"></div>
+            <div class="address-card">
+              <div>
+                <strong>楼盘地址</strong>
+                <p id="addressText">成都 · 项目营销中心</p>
+              </div>
+              <span class="address-pin" aria-hidden="true"></span>
+            </div>
+            <button class="expand-more" type="button">展开全部信息</button>
+          </section>
+        </section>
+
+        <section class="section-card sales-card">
+          <div class="section-title">
+            <span></span>
+            <div>
+              <p>Sales</p>
+              <h3>销售情况</h3>
+            </div>
+            <a class="section-more" href="./project-one-price.html">更多</a>
+          </div>
+          <div class="sales-stat-grid">
+            <div class="sales-stat is-highlight"><span>总套数</span><strong id="salesTotalText">--</strong></div>
+            <div class="sales-stat"><span>已售套数</span><strong id="salesSoldText">--</strong></div>
+            <div class="sales-stat"><span>在售套数</span><strong id="salesAvailableText">--</strong></div>
+            <div class="sales-stat"><span>已售比例</span><strong id="salesRateText">--</strong></div>
+          </div>
+          <p class="sales-clear-time">预计清盘时间（仅参考）： <span id="clearTimeText">2025年12月</span></p>
+          <div class="sales-chart-row">
+            <div id="salesDonut" class="sales-donut"><strong>--</strong><span>总套数</span></div>
+            <div class="sales-legend">
+              <div><i class="legend-blue"></i><span>在售</span><strong id="legendAvailableText">--</strong></div>
+              <div><i class="legend-green"></i><span>已售</span><strong id="legendSoldText">--</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-tab-panel="layout">
+          <section class="section-card layout-plan-card-wrap">
+            <div class="section-title section-title--inline">
+              <span></span>
+              <div>
+                <p>Layout</p>
+                <h3>在售户型</h3>
+              </div>
+              <button class="section-link-button" data-layout-type="all" type="button">全部</button>
+            </div>
+            <div id="layoutTypeFilters" class="layout-type-filters" aria-label="户型类型筛选"></div>
+            <div id="layoutPlanList" class="layout-plan-list"></div>
+          </section>
+        </section>
+
+        <section class="tab-panel" data-tab-panel="price">
+          <section class="section-card one-price-card">
+            <div class="section-title section-title--inline">
+              <span></span>
+              <div>
+                <p>Price</p>
+                <h3>一房一价图</h3>
+              </div>
+              <button class="section-link-button" data-action="open-price-detail" type="button">查看更多</button>
+            </div>
+
+            <div id="onePriceSummary" class="one-price-summary"></div>
+            <div id="onePriceList" class="one-price-list"></div>
+          </section>
+        </section>
+
+        <section class="section-card news-card">
+          <div class="section-title">
+            <span></span>
+            <div>
+              <p>News</p>
+              <h3>楼盘动态</h3>
+            </div>
+          </div>
+          <div id="newsTimeline" class="news-timeline"></div>
+        </section>
+
+        <section class="tab-panel" data-tab-panel="support">
+          <section class="section-card">
+            <div class="section-title">
+              <span></span>
+              <div>
+                <p>Support</p>
+                <h3>配套设施信息</h3>
+              </div>
+            </div>
+            <div id="supportMap" class="support-map" aria-label="周边配套地图"></div>
+            <div id="supportTabs" class="support-tabs" aria-label="配套类型切换"></div>
+            <div id="supportList" class="support-list"></div>
+          </section>
+        </section>
+
+        <section class="section-card intro-card">
+          <div class="section-title">
+            <span></span>
+            <div>
+              <p>Intro</p>
+              <h3>项目介绍</h3>
+            </div>
+          </div>
+          <p id="projectIntroLong" class="project-intro-long"></p>
+        </section>
+      </main>
+
+      <footer class="bottom-actions" aria-label="底部操作">
         <button id="qrButton" class="qr-button" type="button">
-          <span class="qr-button__icon" aria-hidden="true"></span>
-          <span>二维码</span>
+          <span class="qr-icon" aria-hidden="true"></span>
+          二维码
         </button>
-        <a id="contactButton" class="contact-button" href="tel:4000000000">联系开发商</a>
-      </div>
-    </section>
-  </main>
-
-  <div id="infoSheet" class="sheet" hidden>
-    <div class="sheet__mask" data-close-sheet="true"></div>
-    <div class="sheet__panel" role="dialog" aria-modal="true" aria-labelledby="infoSheetTitle">
-      <div class="sheet__handle" aria-hidden="true"></div>
-      <div class="sheet__header">
-        <h2 id="infoSheetTitle">全部楼盘信息</h2>
-        <button id="infoSheetClose" class="sheet__close" type="button" aria-label="关闭">×</button>
-      </div>
-      <div id="infoSheetRows" class="sheet__rows"></div>
-    </div>
+        <a id="contactButton" class="primary-action" href="tel:4000000000">联系开发商</a>
+      </footer>
+    </article>
   </div>
 
-  <div id="qrModal" class="sheet" hidden>
-    <div class="sheet__mask" data-close-qr="true"></div>
-    <div class="sheet__panel sheet__panel--center" role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
-      <button id="qrCloseButton" class="sheet__close sheet__close--top" type="button" aria-label="关闭">×</button>
+  <div id="qrModal" class="modal" hidden>
+    <button class="modal__mask" data-close-qr="true" type="button" aria-label="关闭二维码弹窗"></button>
+    <section class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
+      <button id="qrCloseButton" class="modal__close" type="button" aria-label="关闭">×</button>
+      <p class="modal__eyebrow">Share</p>
       <h2 id="qrModalTitle">项目二维码</h2>
-      <p id="qrModalDesc" class="qr-modal__desc">扫码可直接打开当前项目详情</p>
-      <div class="qr-modal__image-wrap">
-        <img id="qrImage" class="qr-modal__image" alt="项目二维码">
+      <p id="qrModalDesc" class="modal__desc">扫码可直接打开当前项目详情</p>
+      <div class="qr-image-wrap">
+        <img id="qrImage" class="qr-image" alt="项目二维码">
       </div>
-      <p id="qrLinkText" class="qr-modal__link"></p>
-      <p id="qrHint" class="qr-modal__hint"></p>
-      <button id="copyLinkButton" class="sheet__action" type="button">复制详情链接</button>
-    </div>
+      <p id="qrHint" class="qr-hint"></p>
+      <button id="copyLinkButton" class="copy-button" type="button">复制详情链接</button>
+    </section>
+  </div>
+
+  <div id="albumModal" class="modal" hidden>
+    <button class="modal__mask" data-close-album="true" type="button" aria-label="关闭楼盘相册"></button>
+    <section class="modal__panel album-modal__panel" role="dialog" aria-modal="true" aria-labelledby="albumModalTitle">
+      <button id="albumCloseButton" class="modal__close" type="button" aria-label="关闭">×</button>
+      <p class="modal__eyebrow">Album</p>
+      <h2 id="albumModalTitle">楼盘相册</h2>
+      <div class="album-viewer">
+        <img id="albumImage" class="album-image" alt="楼盘相册图片">
+        <button id="albumPrevButton" class="album-nav album-nav--prev" type="button" aria-label="上一张">‹</button>
+        <button id="albumNextButton" class="album-nav album-nav--next" type="button" aria-label="下一张">›</button>
+      </div>
+      <div class="album-meta">
+        <strong id="albumCaption">效果图</strong>
+        <span id="albumCounter">1/1</span>
+      </div>
+      <div id="albumThumbs" class="album-thumbs" aria-label="相册缩略图"></div>
+    </section>
   </div>
 
   <script src="./chengdu-sector-map.js"></script>

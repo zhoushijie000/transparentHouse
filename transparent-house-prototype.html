@@ -218,7 +218,7 @@
     <div class="title">新房行情</div>
     <div class="ctrl single"><select id="areaSel"></select></div>
     <div class="table"><table>
-      <thead><tr><th>区域</th><th>成交套数</th><th>成交面积（㎡）</th><th>参考成交均价（元/㎡）</th><th>套均成交总价（万元）</th></tr></thead>
+      <thead><tr><th>区域</th><th>成交套数</th><th>成交面积（㎡）</th><th>成交范围</th></tr></thead>
       <tbody id="marketBody"></tbody>
     </table></div>
     <div class="chart">
@@ -229,15 +229,6 @@
       </div>
       <canvas id="cUnits"></canvas>
       <div id="cUnitsData" class="chart-data"></div>
-    </div>
-    <div class="chart">
-      <div class="chart-head">
-        <span class="chart-icon price" aria-hidden="true"></span>
-        <h4>近12个月参考成交均价趋势</h4>
-        <span class="unit">单位：元/㎡</span>
-      </div>
-      <canvas id="cPrice"></canvas>
-      <div id="cPriceData" class="chart-data"></div>
     </div>
   </section>
 
@@ -264,15 +255,6 @@
     <div class="block"><div class="bt">一房一价（示例）</div><div id="priceCards" class="mini"></div></div>
     <div class="block"><div class="bt">项目介绍</div><div id="intro" style="font-size:13px;color:#5c6e8b;line-height:1.6"></div></div>
   </section>
-</div>
-
-<div id="qrModal" class="modal">
-  <div class="modal-card">
-    <h4 id="qrProjectTitle">楼盘详细报告咨询</h4>
-    <p>扫码后将由顾问为你发送完整成交报告</p>
-    <div class="qr" aria-hidden="true"></div>
-    <button id="qrClose" class="close-btn">关闭</button>
-  </div>
 </div>
 
 <script>
@@ -306,8 +288,7 @@ months.forEach((month, index) => {
       region: row.region,
       units: Math.round(row.u * factor),
       area: Math.round(row.a * factor),
-      avgPrice: Math.round(row.p * (0.985 + index * 0.002 + rowIndex * 0.001)),
-      avgTotal: Math.round(row.t * (0.99 + index * 0.002))
+      dealRange: buildDealRange(row.t, rowIndex, index)
     };
   });
 });
@@ -354,6 +335,21 @@ function parseAreaValue(layoutText) {
 
 function formatTotalPrice(totalPrice) {
   return `${(totalPrice / 10000).toFixed(1)}万`;
+}
+
+function buildDealRange(totalValue, rowIndex, monthIndex) {
+  const min = Math.round(totalValue * (0.86 + rowIndex * 0.01));
+  const max = Math.round(totalValue * (1.34 + monthIndex * 0.004 + rowIndex * 0.015));
+  return `${min}~${max}万`;
+}
+
+function formatMonthLabel(month) {
+  const [year, monthValue] = month.split("-");
+  return `${year.slice(2)}年${Number(monthValue)}月`;
+}
+
+function formatMonthAxis(month) {
+  return `${Number(month.split("-")[1])}月`;
 }
 
 function buildDealRecords() {
@@ -495,13 +491,13 @@ function drawBars(canvas, values, color, yFormatter, topFormatter) {
     context.fillText(topFormatter(value), x - 2, Math.max(y - 4, 10));
     context.fillStyle = "#7b8ca8";
     context.font = "9px sans-serif";
-    context.fillText(months[index].slice(5), x - 2, height - 9);
+    context.fillText(formatMonthAxis(months[index]), x - 2, height - 9);
   });
 }
 
 function renderMonthChips(targetId, values, suffix, formatter) {
   $(targetId).innerHTML = months.map((month, index) => `
-    <span class="chip"><b>${month.slice(2)}</b>${formatter(values[index])}${suffix}</span>
+    <span class="chip"><b>${formatMonthLabel(month)}</b>${formatter(values[index])}${suffix}</span>
   `).join("");
 }
 
@@ -513,16 +509,13 @@ function renderMarket() {
       <td>${row.region}</td>
       <td>${num(row.units)}</td>
       <td>${num(row.area)}</td>
-      <td>${num(row.avgPrice)}</td>
-      <td>${num(row.avgTotal)}</td>
+      <td>${row.dealRange}</td>
     </tr>
   `).join("");
 
   const series = trend($("areaSel").value);
   drawBars($("cUnits"), series.units, "#1f6dff", (value) => `${Math.round(value)}套`, (value) => Math.round(value));
-  drawBars($("cPrice"), series.prices, "#19a571", (value) => `${(value / 10000).toFixed(1)}万`, (value) => `${(value / 10000).toFixed(1)}万`);
   renderMonthChips("cUnitsData", series.units, "套", (value) => num(value));
-  renderMonthChips("cPriceData", series.prices, "元/㎡", (value) => num(value));
 }
 
 function renderDeals() {
@@ -546,23 +539,13 @@ function renderDeals() {
             <b>${record.areaText}</b>
           </div>
           <div class="deal-meta">
-            <label>备案价</label>
+            <label>挂牌价</label>
             <b>${record.totalPriceText}</b>
           </div>
         </div>
-        <button class="btn deal-btn" data-price-consult="${record.id}">咨询项目报告</button>
       </article>
     `).join("")
     : '<div class="empty">未匹配到楼盘成交数据</div>';
-}
-
-function openQrModal(projectName) {
-  $("qrProjectTitle").textContent = `${projectName} 详细报告咨询`;
-  $("qrModal").classList.add("show");
-}
-
-function closeQrModal() {
-  $("qrModal").classList.remove("show");
 }
 
 function renderDetail() {
@@ -693,19 +676,6 @@ function init() {
   };
   $("areaSel").onchange = renderMarket;
   $("dealSearch").oninput = renderDeals;
-  $("dealList").onclick = (event) => {
-    const button = event.target.closest("[data-price-consult]");
-    if (!button) {
-      return;
-    }
-    window.alert("该功能暂未开放");
-  };
-  $("qrClose").onclick = closeQrModal;
-  $("qrModal").onclick = (event) => {
-    if (event.target.id === "qrModal") {
-      closeQrModal();
-    }
-  };
   $("back").onclick = back;
   window.onresize = () => {
     if (state.page === "market") {

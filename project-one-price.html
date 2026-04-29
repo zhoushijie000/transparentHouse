@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>一房一价 - 透明房产</title>
+  <link rel="stylesheet" href="./project-detail.css">
+</head>
+<body>
+  <div class="detail-shell">
+    <article class="detail-app one-price-page">
+      <header class="detail-nav" aria-label="顶部导航">
+        <div class="detail-nav__inner">
+          <button id="backButton" class="nav-back" type="button" aria-label="返回">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M15.4 5.4 8.8 12l6.6 6.6-1.8 1.8L5.2 12l8.4-8.4 1.8 1.8Z"></path>
+            </svg>
+          </button>
+          <h1 class="detail-nav__title">一房一价</h1>
+          <div class="mini-capsule" aria-hidden="true">
+            <span class="mini-dot mini-dot--small"></span>
+            <span class="mini-dot"></span>
+            <span class="mini-dot mini-dot--small"></span>
+            <i></i>
+            <span class="mini-close"></span>
+          </div>
+        </div>
+      </header>
+
+      <main class="detail-content">
+        <section class="section-card one-price-card">
+          <div class="price-filters" aria-label="一房一价筛选">
+            <label>
+              <span>户型</span>
+              <select id="layoutFilter"></select>
+            </label>
+            <label>
+              <span>面积</span>
+              <select id="roomAreaFilter">
+                <option value="">全部面积</option>
+                <option value="0-90">90㎡以下</option>
+                <option value="90-120">90-120㎡</option>
+                <option value="120-144">120-144㎡</option>
+                <option value="144+">144㎡以上</option>
+              </select>
+            </label>
+            <label>
+              <span>总价</span>
+              <select id="totalPriceFilter">
+                <option value="">全部总价</option>
+                <option value="0-150">150万以内</option>
+                <option value="150-250">150-250万</option>
+                <option value="250-400">250-400万</option>
+                <option value="400-600">400-600万</option>
+                <option value="600+">600万及以上</option>
+              </select>
+            </label>
+            <div class="sale-switch">
+              <span>仅看在售</span>
+              <button id="saleOnlyToggle" class="sale-switch__control" type="button" role="switch" aria-checked="false" aria-label="仅看在售">
+                <i></i>
+              </button>
+            </div>
+          </div>
+          <div id="presaleTabs" class="presale-tabs" aria-label="预售证切换"></div>
+          <div id="onePriceList" class="one-price-list"></div>
+        </section>
+      </main>
+
+      <footer class="bottom-actions one-price-actions" aria-label="底部操作">
+        <a id="backDetailButton" class="primary-action" href="./project-detail.html">返回楼盘详情</a>
+      </footer>
+    </article>
+  </div>
+
+  <script src="./chengdu-sector-map.js"></script>
+  <script src="./project-one-price.js"></script>
+</body>
+</html>

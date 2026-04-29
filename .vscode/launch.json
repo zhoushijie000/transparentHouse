@@ -1,3 +1,4 @@
+    "runtimeArgs": ["--remote-debugging-port=9222", "--incognito"]
 {
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
@@ -10,12 +11,14 @@
             "request": "attach",
             "type": "msedge",
             "webRoot": "${workspaceFolder}"
+            "runtimeArgs":["--incognito"]
+
         },
         {
-            "type": "msedge",
+            "type": "chrome",
             "request": "launch",
-            "name": "Open transparent-house-prototype.html",
-            "file": "c:\\Users\\ZhuanZ\\Desktop\\zhou\\HouseFuni\\transparent-house-prototype.html"
+            "name": "Open index.html",
+            "file": "c:\\Users\\ZhuanZ\\Desktop\\zhou\\HouseFuni\\index.html"
         }
     ]
 }
