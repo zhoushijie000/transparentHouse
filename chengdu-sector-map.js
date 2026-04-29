@@ -1,7 +1,21 @@
 const SVG_NS = "http://www.w3.org/2000/svg";
+const XLINK_NS = "http://www.w3.org/1999/xlink";
 const BASE_VIEWBOX = { x: 0, y: 0, width: 1080, height: 1450 };
+const DEFAULT_VIEWBOX = { x: 40, y: 107, width: 1000, height: 1343 };
 const MIN_VIEWBOX_WIDTH = 360;
+const PROJECT_LAYER_VIEWBOX_WIDTH = 860;
 const CLICK_SUPPRESS_MS = 220;
+const REAL_MAP_TILE_SIZE = 256;
+const REAL_MAP = {
+  zoom: 11,
+  bounds: {
+    west: 103.15,
+    east: 104.75,
+    north: 31.45,
+    south: 29.65
+  },
+  urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+};
 
 const TIER_META = {
   core: { color: "#ef5c57", label: "核心板块" },
@@ -102,9 +116,10 @@ const SECTOR_BLUEPRINTS = [
 
 const refs = {
   phoneApp: document.querySelector(".phone-app"),
+  mapVisual: document.querySelector(".map-visual"),
   legendRail: document.getElementById("legendRail"),
   sectorMap: document.getElementById("sectorMap"),
-  navBackButton: document.getElementById("navBackButton"),
+  projectMapCard: document.getElementById("projectMapCard"),
   navCloseButton: document.getElementById("navCloseButton"),
   zoomInButton: document.getElementById("zoomInButton"),
   zoomOutButton: document.getElementById("zoomOutButton"),
@@ -114,15 +129,15 @@ const refs = {
   sheetTitle: document.getElementById("sheetTitle"),
   sheetSubtitle: document.getElementById("sheetSubtitle"),
   sheetMetrics: document.getElementById("sheetMetrics"),
-  sectorChipRow: document.getElementById("sectorChipRow"),
-  sheetDescription: document.getElementById("sheetDescription"),
   projectCount: document.getElementById("projectCount"),
   projectList: document.getElementById("projectList")
 };
 
 const state = {
   activeSectorId: "financial-city",
+  activeProjectId: null,
   sheetCollapsed: true,
+  initialFocusMode: "overview",
   viewBox: { ...BASE_VIEWBOX },
   suppressClickUntil: 0
 };
@@ -250,8 +265,6 @@ function createProjects(sector, index) {
     const template = pool[(index + projectIndex) % pool.length];
     const delta = projectIndex === 0 ? -1200 : projectIndex === 1 ? 600 : 1800;
     const clampedPrice = Math.min(sector.priceBand[1], Math.max(sector.priceBand[0], centerPrice + delta));
-    const status = projectIndex === 0 ? "热销" : projectIndex === 1 ? "在售" : "新推";
-    const statusType = projectIndex === 0 ? "hot" : projectIndex === 1 ? "steady" : "new";
     const projectId = buildProjectId(sector.id, projectIndex);
 
     return {
@@ -263,8 +276,6 @@ function createProjects(sector, index) {
       detailUrl: buildProjectDetailUrl(projectId),
       price: formatUnitPrice(clampedPrice),
       area: template.area,
-      status,
-      statusType,
       tags: template.tags,
       intro: `${sector.name}板块示例楼盘。${template.intro}`
     };
@@ -273,6 +284,11 @@ function createProjects(sector, index) {
 
 function getActiveSector() {
   return SECTORS.find((sector) => sector.id === state.activeSectorId) || SECTORS[0];
+}
+
+function getActiveProject() {
+  const sector = getActiveSector();
+  return sector.projects.find((project) => project.id === state.activeProjectId) || sector.projects[0] || null;
 }
 
 function renderLegend() {
@@ -293,11 +309,106 @@ function createSvgElement(tagName, attributes = {}) {
   return element;
 }
 
+function lonToTilePixelX(lon, zoom) {
+  return ((lon + 180) / 360) * (2 ** zoom) * REAL_MAP_TILE_SIZE;
+}
+
+function latToTilePixelY(lat, zoom) {
+  const sinLat = Math.sin((lat * Math.PI) / 180);
+  return (
+    0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)
+  ) * (2 ** zoom) * REAL_MAP_TILE_SIZE;
+}
+
+function getRealMapPixelBounds() {
+  const { bounds, zoom } = REAL_MAP;
+  return {
+    minX: lonToTilePixelX(bounds.west, zoom),
+    maxX: lonToTilePixelX(bounds.east, zoom),
+    minY: latToTilePixelY(bounds.north, zoom),
+    maxY: latToTilePixelY(bounds.south, zoom)
+  };
+}
+
+function realMapPixelToSvg(pixelX, pixelY, pixelBounds) {
+  return {
+    x: ((pixelX - pixelBounds.minX) / (pixelBounds.maxX - pixelBounds.minX)) * BASE_VIEWBOX.width,
+    y: ((pixelY - pixelBounds.minY) / (pixelBounds.maxY - pixelBounds.minY)) * BASE_VIEWBOX.height
+  };
+}
+
+function getRealMapTileUrl(x, y) {
+  return REAL_MAP.urlTemplate
+    .replace("{z}", REAL_MAP.zoom)
+    .replace("{x}", x)
+    .replace("{y}", y);
+}
+
+function renderRealMapLayer() {
+  const pixelBounds = getRealMapPixelBounds();
+  const startTileX = Math.floor(pixelBounds.minX / REAL_MAP_TILE_SIZE);
+  const endTileX = Math.floor(pixelBounds.maxX / REAL_MAP_TILE_SIZE);
+  const startTileY = Math.floor(pixelBounds.minY / REAL_MAP_TILE_SIZE);
+  const endTileY = Math.floor(pixelBounds.maxY / REAL_MAP_TILE_SIZE);
+
+  const layer = createSvgElement("g", {
+    id: "realMapLayer",
+    class: "real-map-layer",
+    "aria-hidden": "true"
+  });
+
+  layer.appendChild(createSvgElement("rect", {
+    class: "real-map-underlay",
+    x: BASE_VIEWBOX.x,
+    y: BASE_VIEWBOX.y,
+    width: BASE_VIEWBOX.width,
+    height: BASE_VIEWBOX.height
+  }));
+
+  for (let tileX = startTileX; tileX <= endTileX; tileX += 1) {
+    for (let tileY = startTileY; tileY <= endTileY; tileY += 1) {
+      const topLeft = realMapPixelToSvg(
+        tileX * REAL_MAP_TILE_SIZE,
+        tileY * REAL_MAP_TILE_SIZE,
+        pixelBounds
+      );
+      const bottomRight = realMapPixelToSvg(
+        (tileX + 1) * REAL_MAP_TILE_SIZE,
+        (tileY + 1) * REAL_MAP_TILE_SIZE,
+        pixelBounds
+      );
+      const tileUrl = getRealMapTileUrl(tileX, tileY);
+      const tileImage = createSvgElement("image", {
+        class: "real-map-tile",
+        href: tileUrl,
+        x: topLeft.x,
+        y: topLeft.y,
+        width: bottomRight.x - topLeft.x,
+        height: bottomRight.y - topLeft.y,
+        preserveAspectRatio: "none"
+      });
+      tileImage.setAttributeNS(XLINK_NS, "href", tileUrl);
+      layer.appendChild(tileImage);
+    }
+  }
+
+  layer.appendChild(createSvgElement("rect", {
+    class: "real-map-veil",
+    x: BASE_VIEWBOX.x,
+    y: BASE_VIEWBOX.y,
+    width: BASE_VIEWBOX.width,
+    height: BASE_VIEWBOX.height
+  }));
+
+  refs.sectorMap.appendChild(layer);
+}
+
 function renderMap() {
   refs.sectorMap.innerHTML = "";
   sectorElements.clear();
   projectMarkersLayer = null;
   refs.sectorMap.setAttribute("viewBox", `${BASE_VIEWBOX.x} ${BASE_VIEWBOX.y} ${BASE_VIEWBOX.width} ${BASE_VIEWBOX.height}`);
+  renderRealMapLayer();
 
   SECTORS.forEach((sector) => {
     const group = createSvgElement("g", {
@@ -336,25 +447,28 @@ function onMapClick(event) {
   }
   const marker = event.target.closest("[data-project-id]");
   if (marker) {
-    openProjectDetail(marker.getAttribute("data-project-id"));
+    openProjectMapCard(marker.getAttribute("data-project-id"));
     return;
   }
   const group = event.target.closest("[data-sector-id]");
   if (!group) {
+    closeProjectMapCard();
     return;
   }
-  setActiveSector(group.getAttribute("data-sector-id"), { expandSheet: true });
+  closeProjectMapCard();
+  setActiveSector(group.getAttribute("data-sector-id"), { expandSheet: true, focusMap: true });
 }
 
 function renderSheet() {
   const sector = getActiveSector();
+  if (!sector.projects.some((project) => project.id === state.activeProjectId)) {
+    state.activeProjectId = sector.projects[0]?.id || null;
+  }
   refs.sheetTitle.textContent = sector.name;
-  refs.sheetSubtitle.textContent = `${sector.focus} · ${sector.priceRange}`;
-  refs.sheetDescription.textContent = sector.note;
+  refs.sheetSubtitle.textContent = sector.priceRange;
 
   refs.sheetMetrics.innerHTML = [
     { label: "板块层级", value: TIER_META[sector.tier].label },
-    { label: "主力客群", value: sector.audience },
     { label: "价格带", value: sector.priceRange },
     { label: "在售情况", value: sector.supply }
   ].map((item) => `
@@ -364,15 +478,9 @@ function renderSheet() {
     </div>
   `).join("");
 
-  refs.sectorChipRow.innerHTML = SECTORS.map((item) => `
-    <button class="sector-chip ${item.id === sector.id ? "is-active" : ""}" type="button" data-sector-id="${item.id}">
-      <i style="background:${item.color}"></i>${item.shortName}
-    </button>
-  `).join("");
-
   refs.projectCount.textContent = `${sector.projects.length} 个楼盘`;
   refs.projectList.innerHTML = sector.projects.map((project) => `
-    <article class="project-card" data-project-id="${project.id}" tabindex="0" role="link" aria-label="查看 ${project.name} 详情">
+    <article class="project-card ${project.id === state.activeProjectId ? "is-active" : ""}" data-project-id="${project.id}" tabindex="0" role="link" aria-label="查看 ${project.name} 详情">
       <div class="project-card__top">
         <div>
           <h4>${project.name}</h4>
@@ -386,13 +494,8 @@ function renderSheet() {
           <small>参考均价</small>
         </div>
       </div>
-      <div class="project-tags">
-        ${project.tags.map((tag) => `<span>${tag}</span>`).join("")}
-      </div>
-      <p>${project.intro}</p>
       <div class="project-card__footer">
-        <span class="project-badge ${project.statusType}">${project.status}</span>
-        <a class="project-card__link" href="${project.detailUrl}" data-project-id="${project.id}">查看详情</a>
+        <a class="project-card__link" href="${project.detailUrl}" data-action="detail" data-project-id="${project.id}">查看详情</a>
       </div>
     </article>
   `).join("");
@@ -406,6 +509,9 @@ function updateMapSelection() {
   const activeGroup = sectorElements.get(state.activeSectorId);
   if (activeGroup) {
     refs.sectorMap.appendChild(activeGroup);
+  }
+  if (projectMarkersLayer) {
+    refs.sectorMap.appendChild(projectMarkersLayer);
   }
 
   renderProjectMarkers();
@@ -478,17 +584,38 @@ function renderProjectMarkers() {
   }
 
   projectMarkersLayer.innerHTML = "";
-  const sector = getActiveSector();
-  const markers = getProjectMarkerPositions(sector);
+  projectMarkersLayer.classList.toggle("is-hidden", !shouldShowProjectLayer());
+  if (!shouldShowProjectLayer()) {
+    closeProjectMapCard();
+    return;
+  }
+
+  const markers = SECTORS.flatMap((sector) => getProjectMarkerPositions(sector).map((project) => ({
+    ...project,
+    sector
+  })));
 
   markers.forEach((project, index) => {
+    const isActiveSector = project.sector.id === state.activeSectorId;
     const group = createSvgElement("g", {
-      class: "project-marker",
+      class: [
+        "project-marker",
+        project.id === state.activeProjectId ? "is-active" : "",
+        isActiveSector ? "" : "is-muted"
+      ].filter(Boolean).join(" "),
       transform: `translate(${project.position.x}, ${project.position.y})`,
       "data-project-id": project.id,
-      role: "link",
+      "data-sector-id": project.sector.id,
+      role: "button",
       tabindex: 0,
-      "aria-label": `查看 ${project.name} 详情`
+      "aria-label": `打开 ${project.name} 项目卡片`
+    });
+
+    const pinRing = createSvgElement("circle", {
+      class: "project-pin-ring",
+      cx: 0,
+      cy: 0,
+      r: 18
     });
 
     const pin = createSvgElement("circle", {
@@ -505,30 +632,133 @@ function renderProjectMarkers() {
       r: 4.5
     });
 
-    const chipWidth = Math.max(66, project.shortLabel.length * 16 + 18);
+    const markerLabel = project.name;
+    const markerLabelLength = Array.from(markerLabel).length;
+    const chipWidth = Math.max(58, markerLabelLength * 12 + 18);
     const chip = createSvgElement("rect", {
       class: "project-chip",
       x: -(chipWidth / 2),
-      y: -40,
-      rx: 14,
-      ry: 14,
+      y: -34,
+      rx: 8,
+      ry: 8,
       width: chipWidth,
-      height: 26
+      height: 22
     });
 
     const text = createSvgElement("text", {
       class: "project-chip-text",
       x: 0,
-      y: -22
+      y: -19
     });
-    text.textContent = project.shortLabel || `项目${index + 1}`;
+    text.textContent = markerLabel || `项目${index + 1}`;
 
+    group.appendChild(pinRing);
     group.appendChild(chip);
     group.appendChild(pin);
     group.appendChild(pinCore);
     group.appendChild(text);
     projectMarkersLayer.appendChild(group);
   });
+}
+
+function shouldShowProjectLayer() {
+  return state.viewBox.width <= PROJECT_LAYER_VIEWBOX_WIDTH;
+}
+
+function getProjectMarkerRecord(projectId) {
+  const match = findProjectById(projectId);
+  if (!match) {
+    return null;
+  }
+  const marker = getProjectMarkerPositions(match.sector).find((item) => item.id === projectId);
+  if (!marker) {
+    return null;
+  }
+  return {
+    sector: match.sector,
+    project: match.project,
+    position: marker.position
+  };
+}
+
+function getVisualPointFromSvg(point) {
+  const { rect, scale, offsetX, offsetY } = getRenderMetrics();
+  const visualRect = refs.mapVisual.getBoundingClientRect();
+  return {
+    x: rect.left - visualRect.left + offsetX + (point.x - state.viewBox.x) * scale,
+    y: rect.top - visualRect.top + offsetY + (point.y - state.viewBox.y) * scale
+  };
+}
+
+function positionProjectMapCard() {
+  if (!refs.projectMapCard || refs.projectMapCard.hidden || !state.activeProjectId) {
+    return;
+  }
+  const record = getProjectMarkerRecord(state.activeProjectId);
+  if (!record) {
+    return;
+  }
+
+  const point = getVisualPointFromSvg(record.position);
+  const visualRect = refs.mapVisual.getBoundingClientRect();
+  const cardRect = refs.projectMapCard.getBoundingClientRect();
+  const safeGap = 12;
+  const left = clamp(point.x, cardRect.width / 2 + safeGap, visualRect.width - cardRect.width / 2 - safeGap);
+  let top = point.y - cardRect.height - 24;
+
+  if (top < safeGap) {
+    top = point.y + 26;
+  }
+
+  top = clamp(top, safeGap, Math.max(safeGap, visualRect.height - cardRect.height - 104));
+  refs.projectMapCard.style.left = `${left}px`;
+  refs.projectMapCard.style.top = `${top}px`;
+}
+
+function renderProjectMapCard(record) {
+  const { sector, project } = record;
+  refs.projectMapCard.innerHTML = `
+    <button class="project-map-card__close" type="button" data-close-project-map-card aria-label="关闭项目卡片">×</button>
+    <p class="project-map-card__kicker">${sector.name}</p>
+    <h4>${project.name}</h4>
+    <div class="project-map-card__meta">
+      <span>${project.area}</span>
+      ${project.tags.slice(0, 2).map((tag) => `<span>${tag}</span>`).join("")}
+    </div>
+    <div class="project-map-card__price">
+      <span>参考均价</span>
+      <strong>${project.price}</strong>
+    </div>
+    <div class="project-map-card__actions">
+      <a href="${project.detailUrl}" data-action="detail" data-project-id="${project.id}">查看详情</a>
+    </div>
+  `;
+  refs.projectMapCard.hidden = false;
+  window.requestAnimationFrame(positionProjectMapCard);
+}
+
+function closeProjectMapCard() {
+  if (!refs.projectMapCard) {
+    return;
+  }
+  refs.projectMapCard.hidden = true;
+  refs.projectMapCard.innerHTML = "";
+}
+
+function openProjectMapCard(projectId, options = {}) {
+  const record = getProjectMarkerRecord(projectId);
+  if (!record) {
+    return;
+  }
+  state.activeSectorId = record.sector.id;
+  state.activeProjectId = record.project.id;
+  renderSheet();
+  updateMapSelection();
+  setSheetCollapsed(true);
+  if (options.focusMap) {
+    focusProjectView(record.sector, record.project.id);
+  }
+  renderProjectMapCard(record);
 }
 
 function cloneViewBox(viewBox) {
@@ -565,6 +795,8 @@ function applyViewBox(nextViewBox) {
     "viewBox",
     `${state.viewBox.x} ${state.viewBox.y} ${state.viewBox.width} ${state.viewBox.height}`
   );
+  renderProjectMarkers();
+  positionProjectMapCard();
 }
 
 function getRenderMetrics(referenceViewBox = state.viewBox) {
@@ -601,7 +833,7 @@ function zoomAt(factor, clientX, clientY, referenceViewBox = state.viewBox) {
 }
 
 function resetViewBox() {
-  applyViewBox({ ...BASE_VIEWBOX });
+  applyViewBox({ ...DEFAULT_VIEWBOX });
 }
 
 function focusSectorView(sector) {
@@ -621,6 +853,25 @@ function focusSectorView(sector) {
   applyViewBox({
     x: centerX - targetWidth / 2,
     y: centerY - targetHeight / 2,
+    width: targetWidth,
+    height: targetHeight
+  });
+}
+
+function focusProjectView(sector, projectId) {
+  const marker = getProjectMarkerPositions(sector).find((item) => item.id === projectId);
+  if (!marker) {
+    focusSectorView(sector);
+    return;
+  }
+
+  const ratio = BASE_VIEWBOX.height / BASE_VIEWBOX.width;
+  const targetWidth = Math.max(MIN_VIEWBOX_WIDTH, 420);
+  const targetHeight = targetWidth * ratio;
+
+  applyViewBox({
+    x: marker.position.x - targetWidth / 2,
+    y: marker.position.y - targetHeight / 2,
     width: targetWidth,
     height: targetHeight
   });
@@ -775,6 +1026,10 @@ function setActiveSector(sectorId, options = {}) {
   }
 
   state.activeSectorId = sectorId;
+  const sector = getActiveSector();
+  if (!sector.projects.some((project) => project.id === state.activeProjectId)) {
+    state.activeProjectId = sector.projects[0]?.id || null;
+  }
   renderSheet();
   updateMapSelection();
 
@@ -783,18 +1038,36 @@ function setActiveSector(sectorId, options = {}) {
   }
 
   if (focusMap) {
-    focusSectorView(getActiveSector());
+    focusSectorView(sector);
   }
 }
 
-function bindEvents() {
-  refs.navBackButton.addEventListener("click", () => {
-    if (window.history.length > 1) {
-      window.history.back();
-    }
-  });
+function applyInitialSelection() {
+  const params = new URLSearchParams(window.location.search);
+  const sectorId = params.get("sector");
+  const projectId = params.get("project");
+  state.initialFocusMode = "overview";
 
-  refs.navCloseButton.addEventListener("click", () => {
+  if (projectId) {
+    const match = findProjectById(projectId);
+    if (match) {
+      state.activeSectorId = match.sector.id;
+      state.activeProjectId = match.project.id;
+      state.initialFocusMode = "project";
+      return;
+    }
+  }
+
+  if (sectorId && SECTORS.some((sector) => sector.id === sectorId)) {
+    state.activeSectorId = sectorId;
+    state.initialFocusMode = "sector";
+  }
+
+  state.activeProjectId = getActiveProject()?.id || null;
+}
+
+function bindEvents() {
+  refs.navCloseButton?.addEventListener("click", () => {
     window.close();
     if (window.history.length > 1) {
       window.setTimeout(() => {
@@ -828,14 +1101,6 @@ function bindEvents() {
     setSheetCollapsed(!state.sheetCollapsed);
   });
 
-  refs.sectorChipRow.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-sector-id]");
-    if (!button) {
-      return;
-    }
-    setActiveSector(button.getAttribute("data-sector-id"), { expandSheet: true, focusMap: true });
-  });
-
   refs.projectList.addEventListener("click", (event) => {
     const trigger = event.target.closest("[data-project-id]");
     if (!trigger) {
@@ -849,6 +1114,9 @@ function bindEvents() {
     if (event.key !== "Enter" && event.key !== " ") {
       return;
     }
+    if (event.target.closest(".project-card__link")) {
+      return;
+    }
     const card = event.target.closest(".project-card");
     if (!card) {
       return;
@@ -856,15 +1124,43 @@ function bindEvents() {
     event.preventDefault();
     openProjectDetail(card.getAttribute("data-project-id"));
   });
+
+  refs.projectMapCard.addEventListener("click", (event) => {
+    const closeTrigger = event.target.closest("[data-close-project-map-card]");
+    if (closeTrigger) {
+      closeProjectMapCard();
+      return;
+    }
+  });
+
+  refs.sectorMap.addEventListener("keydown", (event) => {
+    if (!["Enter", " "].includes(event.key)) {
+      return;
+    }
+    const marker = event.target.closest("[data-project-id]");
+    if (!marker) {
+      return;
+    }
+    event.preventDefault();
+    openProjectMapCard(marker.getAttribute("data-project-id"));
+  });
+
+  window.addEventListener("resize", positionProjectMapCard);
 }
 
 function init() {
+  applyInitialSelection();
   renderLegend();
   renderMap();
   resetViewBox();
   renderSheet();
   updateMapSelection();
   setSheetCollapsed(state.sheetCollapsed);
+  if (state.initialFocusMode === "project" && state.activeProjectId) {
+    focusProjectView(getActiveSector(), state.activeProjectId);
+  } else if (state.initialFocusMode === "sector") {
+    focusSectorView(getActiveSector());
+  }
   bindEvents();
 }
 

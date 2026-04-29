@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>成都板块地图选房</title>
+  <title>透明房产</title>
   <link rel="stylesheet" href="./chengdu-sector-map.css">
 </head>
 <body>
@@ -11,20 +11,32 @@
     <section class="phone-app sheet-collapsed">
       <div class="map-stage">
         <header class="map-header">
-          <button id="navBackButton" class="nav-button nav-button--back" type="button" aria-label="返回">
-            <span class="nav-icon nav-icon--back" aria-hidden="true"></span>
-            <span>返回</span>
-          </button>
-          <h1 class="nav-title">成都区域板块地图</h1>
-          <button id="navCloseButton" class="nav-button nav-button--close" type="button" aria-label="关闭">
-            <span class="nav-icon nav-icon--close" aria-hidden="true"></span>
-          </button>
+          <div class="nav-spacer" aria-hidden="true"></div>
+          <h1 class="nav-title">透明房产</h1>
+          <div class="nav-actions" aria-label="页面操作">
+            <button class="nav-actions__button" type="button" aria-label="更多">
+              <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
+                <circle cx="4" cy="10" r="1.5"></circle>
+                <circle cx="10" cy="10" r="2.2"></circle>
+                <circle cx="16" cy="10" r="1.5"></circle>
+              </svg>
+            </button>
+            <span class="nav-actions__divider" aria-hidden="true"></span>
+            <button id="navCloseButton" class="nav-actions__button" type="button" aria-label="关闭">
+              <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="6.2" stroke="currentColor" stroke-width="1.8"></circle>
+                <path d="M7.4 7.4 12.6 12.6M12.6 7.4 7.4 12.6" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path>
+              </svg>
+            </button>
+          </div>
         </header>
 
         <div class="legend-rail" id="legendRail"></div>
 
         <div class="map-visual">
-          <svg id="sectorMap" viewBox="0 0 1080 1450" preserveAspectRatio="xMidYMin meet" aria-label="成都板块图"></svg>
+          <svg id="sectorMap" viewBox="0 0 1080 1450" preserveAspectRatio="xMidYMin meet" aria-label="板块图"></svg>
+          <div class="map-attribution" aria-hidden="true">© OpenStreetMap</div>
+          <aside id="projectMapCard" class="project-map-card" hidden aria-live="polite"></aside>
           <div class="map-controls">
             <button id="zoomInButton" type="button" aria-label="放大">+</button>
             <button id="zoomOutButton" type="button" aria-label="缩小">-</button>
@@ -40,7 +52,7 @@
           <div class="sheet-header__text">
             <span class="sheet-kicker">当前板块</span>
             <h2 id="sheetTitle">金融城</h2>
-            <p id="sheetSubtitle">核心商务区 · 4.6万-6.5万/㎡</p>
+            <p id="sheetSubtitle">4.6万-6.5万/㎡</p>
           </div>
           <button id="sheetToggle" class="sheet-toggle" type="button" aria-expanded="true">收起</button>
         </div>
@@ -52,28 +64,37 @@
 
           <section class="sheet-section">
             <div class="section-title">
-              <h3>全部板块</h3>
-              <span>点击切换</span>
-            </div>
-            <div class="sector-chip-row" id="sectorChipRow"></div>
-          </section>
-
-          <section class="sheet-section">
-            <div class="section-title">
-              <h3>板块介绍</h3>
-            </div>
-            <p id="sheetDescription" class="sheet-description"></p>
-          </section>
-
-          <section class="sheet-section">
-            <div class="section-title">
-              <h3>推荐楼盘</h3>
+              <h3>在售楼盘</h3>
               <span id="projectCount"></span>
             </div>
             <div class="project-list" id="projectList"></div>
           </section>
         </div>
       </section>
+      <a class="mode-switch-chip" href="./index.html" aria-label="切换到列表模式">
+        <span class="mode-switch-chip__icon" aria-hidden="true"></span>
+        <span>列表模式</span>
+      </a>
+      <nav class="bottom-nav" aria-label="主菜单">
+        <a class="bottom-nav__item" href="./index.html">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 4.5 4 11v8.5h5.5v-5.5h5V19.5H20V11l-8-6.5Zm0 2.58L18 12v5.5h-1.5V12.5h-9V17.5H6V12l6-4.92Z"></path>
+          </svg>
+          <span>首页</span>
+        </a>
+        <a class="bottom-nav__item" href="./data.html">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M5 9h3v10H5V9Zm5-4h4v14h-4V5Zm6 7h3v7h-3v-7Z"></path>
+          </svg>
+          <span>数据</span>
+        </a>
+        <a class="bottom-nav__item" href="./my.html" aria-label="我的">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-3.33 0-6 1.79-6 4v1h12v-1c0-2.21-2.67-4-6-4Z"></path>
+          </svg>
+          <span>我的</span>
+        </a>
+      </nav>
     </section>
   </main>
 
