@@ -1,24 +1,742 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>成都板块地图选房</title>
-  <meta http-equiv="refresh" content="0; url=./chengdu-sector-map.html">
-  <style>
-    body{
-      margin:0;
-      min-height:100vh;
-      display:grid;
-      place-items:center;
-      font-family:"PingFang SC","Microsoft YaHei",sans-serif;
-      background:#f7fafc;
-      color:#294368;
-    }
-    a{color:#1f6dff}
-  </style>
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>透明房产 - 在售楼盘</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Plus_Jakarta_Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#f8f9fa",
+                    "on-primary-fixed": "#001b3d",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#4f3d00",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed": "#241a00",
+                    "primary-fixed-dim": "#a5c8ff",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#f0f1f2",
+                    "tertiary": "#735c00",
+                    "on-secondary-container": "#526478",
+                    "surface-variant": "#e1e3e4",
+                    "on-surface": "#191c1d",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary": "#4e6073",
+                    "surface-container-highest": "#e1e3e4",
+                    "surface-dim": "#d9dadb",
+                    "secondary-fixed-dim": "#b5c8df",
+                    "surface-container-high": "#e7e8e9",
+                    "primary-container": "#004786",
+                    "on-error-container": "#93000a",
+                    "inverse-primary": "#a5c8ff",
+                    "secondary-container": "#cfe2f9",
+                    "on-primary-container": "#d7e3ff",
+                    "surface-container-low": "#f3f4f5",
+                    "secondary-fixed": "#d1e4fb",
+                    "outline-variant": "#c0c8cc",
+                    "surface-tint": "#005faf",
+                    "on-background": "#191c1d",
+                    "on-secondary-fixed": "#091d2e",
+                    "primary-fixed": "#d7e3ff",
+                    "surface-bright": "#f8f9fa",
+                    "on-surface-variant": "#40484c",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "error-container": "#ffdad6",
+                    "surface": "#f8f9fa",
+                    "primary": "#00325b",
+                    "tertiary-container": "#cca730",
+                    "on-secondary-fixed-variant": "#36485b",
+                    "surface-container": "#edeeef",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed-variant": "#004786",
+                    "on-error": "#ffffff",
+                    "outline": "#70787c",
+                    "tertiary-fixed": "#ffe088",
+                    "inverse-surface": "#2e3132"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope", "sans-serif"],
+                    "body": ["Inter", "sans-serif"],
+                    "label": ["Plus Jakarta Sans", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+        body {
+            min-height: 100dvh;
+            background:
+                radial-gradient(circle at top, rgba(165, 200, 255, 0.16), transparent 30%),
+                linear-gradient(180deg, #f3f7fb 0%, #eef3f8 100%);
+        }
+        .mobile-shell {
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+        }
+        .mobile-app {
+            position: relative;
+            width: 100%;
+            max-width: 430px;
+            min-height: 100dvh;
+            background: rgba(248, 249, 250, 0.96);
+            box-shadow: 0 0 0 1px rgba(192, 200, 204, 0.25);
+            overflow: hidden;
+        }
+        .floating-shell {
+            left: 50%;
+            width: 100%;
+            max-width: 430px;
+            transform: translateX(-50%);
+        }
+        .top-safe {
+            padding-top: calc(env(safe-area-inset-top) + 10px);
+        }
+        .bottom-safe {
+            padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
+        }
+        .fab-offset {
+            bottom: calc(env(safe-area-inset-bottom) + 92px);
+        }
+        .card-link {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+        }
+        .card-inner-action {
+            position: relative;
+            z-index: 20;
+        }
+        .card-media {
+            position: relative;
+            z-index: 20;
+            touch-action: pan-x;
+            -webkit-overflow-scrolling: touch;
+        }
+        @media (max-width: 430px) {
+            .mobile-app {
+                box-shadow: none;
+            }
+        }
+    </style>
 </head>
-<body>
-  <div>正在进入成都板块地图页，如未自动跳转请点击 <a href="./chengdu-sector-map.html">这里</a>。</div>
-</body>
-</html>
+<body class="bg-surface font-body text-on-surface">
+<div class="mobile-shell">
+<div class="mobile-app">
+<!-- TopAppBar -->
+<header class="fixed top-0 floating-shell top-safe z-50 bg-white/80 backdrop-blur-xl shadow-sm">
+<div class="px-4 pb-4">
+<div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3 pt-2">
+<div></div>
+<div class="text-center text-[17px] font-semibold tracking-tight text-black">透明房产</div>
+<div class="justify-self-end flex h-8 items-center justify-between rounded-full bg-white/75 px-3 shadow-sm ring-1 ring-black/10 backdrop-blur-md">
+<button aria-label="更多" class="flex h-6 w-6 items-center justify-center text-black" type="button">
+<svg aria-hidden="true" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+<circle cx="4" cy="10" r="1.5"></circle>
+<circle cx="10" cy="10" r="2.2"></circle>
+<circle cx="16" cy="10" r="1.5"></circle>
+</svg>
+</button>
+<span class="h-4 w-px bg-black/15"></span>
+<button aria-label="关闭" class="flex h-6 w-6 items-center justify-center text-black" type="button">
+<svg aria-hidden="true" class="h-4 w-4" fill="none" viewBox="0 0 20 20">
+<circle cx="10" cy="10" r="6.2" stroke="currentColor" stroke-width="1.8"></circle>
+<path d="M7.4 7.4 12.6 12.6M12.6 7.4 7.4 12.6" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path>
+</svg>
+</button>
+</div>
+</div>
+<div class="mt-3 flex items-center gap-2">
+<div class="relative flex h-11 flex-1 items-center rounded-xl bg-surface-container-lowest px-3.5 ring-1 ring-outline-variant/15">
+<svg aria-hidden="true" class="h-3.5 w-3.5 flex-none text-outline" fill="currentColor" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.47 6.47 0 0 0 4.23-1.57l.27.28v.79L20 21.5 21.5 20l-6-6Zm-6 0A4.5 4.5 0 1 1 9.5 5a4.5 4.5 0 0 1 0 9Z"/></svg>
+<input id="searchInput" class="ml-2 w-full border-none bg-transparent py-2 text-sm font-body focus:ring-0" placeholder="搜索区域或楼盘项目..." type="text"/>
+</div>
+<button id="openFilterButton" aria-expanded="false" class="h-11 shrink-0 rounded-xl bg-primary px-4 text-sm font-label font-bold text-on-primary shadow-lg shadow-primary/15" type="button">筛选</button>
+</div>
+</div>
+</header>
+<main class="pt-40 pb-40 px-4 mx-auto max-w-[430px]">
+<!-- Section Header -->
+<div class="mb-5 px-1">
+<div>
+<h1 class="text-[22px] font-extrabold font-headline text-primary tracking-tight">在售楼盘</h1>
+<p id="filterSummary" class="mt-1 text-xs font-medium text-secondary">共 6 个在售楼盘</p>
+</div>
+</div>
+<!-- Property Cards List -->
+<div class="space-y-5" id="propertyList"></div>
+<div id="emptyState" class="hidden rounded-[1.25rem] border border-dashed border-outline-variant/60 bg-white/75 px-4 py-10 text-center text-sm text-secondary shadow-sm">
+未找到符合条件的楼盘，请调整搜索或筛选条件。
+</div>
+</main>
+<div id="filterModal" class="fixed inset-0 z-[70] hidden">
+<button id="filterBackdrop" aria-label="关闭筛选弹窗" class="absolute inset-0 bg-slate-950/30 backdrop-blur-[2px]" type="button"></button>
+<section class="absolute bottom-0 left-1/2 max-h-[82dvh] w-full max-w-[430px] -translate-x-1/2 overflow-y-auto rounded-t-[1.75rem] bg-white px-4 pb-6 pt-3 shadow-[0_-24px_60px_rgba(15,23,42,0.18)]">
+<div class="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-200"></div>
+<div class="mb-4 flex items-center justify-between">
+<div>
+<p class="text-[11px] font-label font-bold uppercase tracking-[0.18em] text-secondary">楼盘筛选</p>
+<h2 class="text-lg font-extrabold font-headline text-primary">筛选楼盘</h2>
+</div>
+<button id="closeFilterButton" class="rounded-full bg-surface-container px-3 py-1.5 text-[12px] font-label font-bold text-secondary" type="button">关闭</button>
+</div>
+<div class="space-y-3">
+<label class="block rounded-2xl bg-surface-container-lowest px-3 py-3 ring-1 ring-outline-variant/15">
+<span class="mb-2 block text-[10px] font-label font-bold uppercase tracking-[0.18em] text-outline">区域</span>
+<select id="regionFilter" class="w-full border-none bg-transparent p-0 text-sm font-semibold text-primary focus:ring-0">
+<option value="">全部区域</option>
+</select>
+</label>
+<label class="block rounded-2xl bg-surface-container-lowest px-3 py-3 ring-1 ring-outline-variant/15">
+<span class="mb-2 block text-[10px] font-label font-bold uppercase tracking-[0.18em] text-outline">板块</span>
+<select id="sectorFilter" class="w-full border-none bg-transparent p-0 text-sm font-semibold text-primary focus:ring-0">
+<option value="">全部板块</option>
+</select>
+</label>
+<label class="block rounded-2xl bg-surface-container-lowest px-3 py-3 ring-1 ring-outline-variant/15">
+<span class="mb-2 block text-[10px] font-label font-bold uppercase tracking-[0.18em] text-outline">户型</span>
+<select id="roomFilter" class="w-full border-none bg-transparent p-0 text-sm font-semibold text-primary focus:ring-0">
+<option value="">全部户型</option>
+</select>
+</label>
+<label class="block rounded-2xl bg-surface-container-lowest px-3 py-3 ring-1 ring-outline-variant/15">
+<span class="mb-2 block text-[10px] font-label font-bold uppercase tracking-[0.18em] text-outline">面积段</span>
+<select id="areaFilter" class="w-full border-none bg-transparent p-0 text-sm font-semibold text-primary focus:ring-0">
+<option value="">全部面积</option>
+<option value="0-90">90㎡以下</option>
+<option value="90-120">90-120㎡</option>
+<option value="120-144">120-144㎡</option>
+<option value="144+">144㎡以上</option>
+</select>
+</label>
+<label class="block rounded-2xl bg-surface-container-lowest px-3 py-3 ring-1 ring-outline-variant/15">
+<span class="mb-2 block text-[10px] font-label font-bold uppercase tracking-[0.18em] text-outline">总价</span>
+<select id="priceFilter" class="w-full border-none bg-transparent p-0 text-sm font-semibold text-primary focus:ring-0">
+<option value="">全部总价</option>
+<option value="0-150">150万以内</option>
+<option value="150-250">150万-250万</option>
+<option value="250-400">250万-400万</option>
+<option value="400-600">400万-600万</option>
+<option value="600+">600万及以上</option>
+</select>
+</label>
+</div>
+<div class="mt-5 flex items-center gap-3">
+<button id="resetFiltersButton" class="flex-1 rounded-full bg-surface-container px-4 py-3 text-[13px] font-label font-bold text-primary transition-colors hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50" type="button">重置</button>
+<button id="applyFilterButton" class="flex-1 rounded-full bg-primary px-4 py-3 text-[13px] font-label font-bold text-on-primary shadow-lg shadow-primary/20" type="button">查看楼盘</button>
+</div>
+</section>
+</div>
+<!-- Map/List Toggle FAB -->
+<div class="fixed floating-shell fab-offset z-50 flex justify-center">
+<a class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-full shadow-2xl active:scale-95 transition-transform font-label font-bold" href="./chengdu-sector-map.html">
+<svg aria-hidden="true" class="h-5 w-5 flex-none" fill="currentColor" viewBox="0 0 24 24"><path d="m15 18.5 4-1.39V6.5l-4 1.4v10.6Zm-6 1.6 4-1.6V7.9l-4 1.6v10.6Zm-5-3 3 1.05V7.55L4 6.5v10.6ZM3.3 4.8 8.7 6.6 15 4l5.7 1.9c.18.06.3.22.3.41v11.2c0 .18-.12.34-.3.4L15 20 9 22 3.3 20.1A.43.43 0 0 1 3 19.7V5.2c0-.3.3-.5.6-.4Z"/></svg>
+<span>地图模式</span>
+</a>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 floating-shell z-50 rounded-t-[1.5rem] bg-white/85 backdrop-blur-xl shadow-[0_-4px_24px_rgba(25,28,29,0.06)] flex justify-around items-center h-20 bottom-safe">
+<!-- Viewing (Active) -->
+<a id="homeNavButton" class="flex flex-col items-center justify-center text-primary font-bold opacity-100 transition-all" href="./index.html" aria-current="page">
+<svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 21V3h12v4h6v14H3Zm4-3h2v-2H7v2Zm0-4h2v-2H7v2Zm0-4h2V8H7v2Zm4 8h2v-2h-2v2Zm0-4h2v-2h-2v2Zm0-4h2V8h-2v2Zm4 8h2v-2h-2v2Zm0-4h2v-2h-2v2Z"/></svg>
+<span class="text-[11px] font-label font-semibold mt-1">首页</span>
+</a>
+<!-- Data -->
+<a id="dataNavButton" class="flex flex-col items-center justify-center text-slate-400 hover:text-primary transition-colors" href="./data.html">
+<svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M5 9h3v10H5V9Zm5-4h4v14h-4V5Zm6 7h3v7h-3v-7Z"/></svg>
+<span class="text-[11px] font-label font-medium mt-1">数据</span>
+</a>
+<!-- My -->
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-primary transition-colors" href="./my.html">
+<svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-3.33 0-6 1.79-6 4v1h12v-1c0-2.21-2.67-4-6-4Z"/></svg>
+<span class="text-[11px] font-label font-medium mt-1">我的</span>
+</a>
+</nav>
+</div>
+</div>
+<script>
+const properties = [
+  {
+    name: "绿地之窗",
+    badge: "热销项目",
+    badgeTone: "tertiary",
+    location: "天府新区 · 距地铁1号线 2.5km",
+    region: "天府新区",
+    sector: "大源中央",
+    priceMin: 420,
+    priceMax: 850,
+    tags: ["容积率4.0", "精装修"],
+    features: ["近地铁", "改善", "景观"],
+    sizeRange: "140 - 280 m²",
+    elevatorRatio: "2梯4户",
+    unitTitle: "A栋 1单元 14层 1402号",
+    unitMeta: "3房2厅2卫 · 142m²",
+    unitPrice: "¥428万",
+    stockCount: 12,
+    images: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuD9SJWU7JQTfye5p-a0qtJxe8OUbG3IKAXLw7Frmm8KEiNBjJVXFV9FTvWmEHLKQGgM9SwOe4_7gYfiAqVEtKydl7nZoldo5qYUpCH18yWm4DoQ9K8oo1Ic7Y0QRbQdgaHkeIGvGdT1apDAYCs12Fj5LqbSgcRr-QlOZj1wV2clPyMvVFv3SGQNcEPkuKB3ayfJSxC2TvocT5MdUxBCWWrXi7MQQtg4mx0MfuliAl-z6S3hYU7ZYy_8-d3yrg2-ieo5D0ZlJKLP4kKU",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCfpKMvfUhUkEOzMcHwqNnO_spqIBIfwLAyj9FIOu5cTcZm8MjwcDXd-ZoER4CiztgQqap1kigeBwB_boxeQRWm9YnJtqo8WmYmm_oIgF7MJu7A4hSOY5qIJV_n4JreLnBIJInmwUIstX-XDZKEJ3KlnzllqiTlB2jyHyFgpeHyw_9bwsRnOYXKrFuJvnIKLxYChWCkPx85BiOC1FZMXgjzkyM-_ER0OCDhFS3cMKpH-4kBZs-FV4e7LCmwQpAieDY3HGEnc2ZqXq9g",
+      "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80"
+    ]
+  },
+  {
+    name: "锦江府",
+    badge: "在售项目",
+    badgeTone: "primary",
+    location: "锦江区 · 滨江公园旁",
+    region: "锦江区",
+    sector: "望江公园",
+    priceMin: 750,
+    priceMax: 1500,
+    tags: ["容积率2.2", "精装修"],
+    features: ["景观", "改善", "会所"],
+    sizeRange: "220 - 450 m²",
+    elevatorRatio: "2梯2户",
+    unitTitle: "1号楼 1单元 32层 3201号",
+    unitMeta: "5房5厅5卫 · 410m²",
+    unitPrice: "¥1420万",
+    stockCount: 4,
+    images: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDAcJ1QT2tPCELX7n_oL2OkxcNXHoHwBWjMv_qkPhudenCx5K203y8ZGPK1Wu5UI-zGSbwa4UncD-HdeGnVNCkFV2yxPMfJpHsCuBz1ypy665GbBpAswPEKAL26Ozrt2CW_I6sAV69xzIJHwkHVovcac6Rwh5cIY8HaHxGm1FhGSq-lJdnOi5swq2YZHeoAZ_LlfE2AQkZNfaUeUS-EnBYnunHXkOkg3xJ1UDjrc04OOFiaDRUp1S2Cn0W4gxAlPH3l4ZubAWYih1Vh",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBSvSPE24lpZ9CYrwf5qVJrkxH6eUPqRql04OlH9jIKf3w01pUvD9sM8E0uXAjj0S7E8_Bjqi1zXwzq0cFY7GVR2-ALnvA1CjXbto1lLZ2G-FQJ5uaZ2NRF1bjiJQ0IYCXgx8O4kM69kRXgaDQi0tVUSO_JjJ3L-ZSBC53oDNnVwD53KGmL5xU7IJ5a5gk9Pna8K4qdT2EoAJpLOxB9zGXaX0n-vrM8nZNhaYfR2vErMmtOQ-jY5NhgQeY7DkTvVydkg1s43wqC",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCYoZx0mRfKxKU7vX2Ss7TK0vV5fWq6-4O7piCfawE2v8j7K8M0ndR7j1zPXaYh1l7u8ZcIew1vP9UV1lwjQjW4QwF58o2hZ-3Xn0BqC5XPNnQ4Y_2qzE1vDsjx_5i7C8okyA1p0g0TzqS8V6O4O7-7W1VaFzGZc7JXGWq1pG-1XbmL0v11fS9zzpQmtoX0pYd2s1O9CuyZs9uJ0r3_KPwC8xVx_mh7KCy2mK8",
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80"
+    ]
+  },
+  {
+    name: "天樾云庭",
+    badge: "新上项目",
+    badgeTone: "primary",
+    location: "武侯新城 · 9号线簇桥站旁",
+    region: "武侯区",
+    sector: "武侯大道",
+    priceMin: 330,
+    priceMax: 620,
+    tags: ["容积率1.8", "清水房"],
+    features: ["近地铁", "低密", "改善"],
+    sizeRange: "105 - 168 m²",
+    elevatorRatio: "2梯2户",
+    unitTitle: "6栋 2单元 11层 1101号",
+    unitMeta: "4房2厅2卫 · 168m²",
+    unitPrice: "¥598万",
+    stockCount: 18,
+    images: [
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1448630360428-65456885c650?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80"
+    ]
+  },
+  {
+    name: "麓湖澜岸",
+    badge: "改善优选",
+    badgeTone: "tertiary",
+    location: "天府新区 · 湖区中轴景观带",
+    region: "天府新区",
+    sector: "麓湖生态城",
+    priceMin: 520,
+    priceMax: 980,
+    tags: ["容积率1.5", "精装修"],
+    features: ["景观", "低密", "会所"],
+    sizeRange: "155 - 260 m²",
+    elevatorRatio: "2梯3户",
+    unitTitle: "3栋 1单元 9层 901号",
+    unitMeta: "4房2厅3卫 · 188m²",
+    unitPrice: "¥672万",
+    stockCount: 9,
+    images: [
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1200&q=80"
+    ]
+  },
+  {
+    name: "光合云屿",
+    badge: "刚改优选",
+    badgeTone: "primary",
+    location: "龙泉驿 · 东安湖公园旁",
+    region: "龙泉驿区",
+    sector: "东安湖",
+    priceMin: 185,
+    priceMax: 360,
+    tags: ["容积率2.5", "清水房"],
+    features: ["景观", "近地铁", "改善"],
+    sizeRange: "89 - 128 m²",
+    elevatorRatio: "2梯6户",
+    unitTitle: "8栋 2单元 17层 1704号",
+    unitMeta: "3房2厅2卫 · 108m²",
+    unitPrice: "¥236万",
+    stockCount: 26,
+    images: [
+      "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80"
+    ]
+  },
+  {
+    name: "青云上城",
+    badge: "核心地段",
+    badgeTone: "tertiary",
+    location: "青羊新城 · 双地铁口约600m",
+    region: "青羊区",
+    sector: "光华新城",
+    priceMin: 288,
+    priceMax: 540,
+    tags: ["容积率2.8", "精装修"],
+    features: ["近地铁", "改善", "会所"],
+    sizeRange: "96 - 143 m²",
+    elevatorRatio: "2梯4户",
+    unitTitle: "5栋 1单元 13层 1302号",
+    unitMeta: "3房2厅2卫 · 118m²",
+    unitPrice: "¥338万",
+    stockCount: 21,
+    images: [
+      "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80"
+    ]
+  }
+];
+
+const PROJECT_DETAIL_PATH = "./project-detail.html";
+const propertyFilterMeta = [
+  { projectId: "home-greenland", region: "天府新区", roomTypes: [3, 4] },
+  { projectId: "home-jinjiang", region: "锦江区", roomTypes: [4, 5] },
+  { projectId: "home-tianyue", region: "武侯区", roomTypes: [3, 4] },
+  { projectId: "home-luhu", region: "天府新区", roomTypes: [4] },
+  { projectId: "home-guanghe", region: "龙泉驿区", roomTypes: [3] },
+  { projectId: "home-qingyun", region: "青羊区", roomTypes: [3, 4] }
+];
+
+properties.forEach((property, index) => {
+  const meta = propertyFilterMeta[index];
+  if (meta) {
+    Object.assign(property, meta);
+  }
+});
+
+const searchInput = document.querySelector("#searchInput");
+const openFilterButton = document.querySelector("#openFilterButton");
+const filterModal = document.querySelector("#filterModal");
+const filterBackdrop = document.querySelector("#filterBackdrop");
+const closeFilterButton = document.querySelector("#closeFilterButton");
+const regionFilter = document.querySelector("#regionFilter");
+const sectorFilter = document.querySelector("#sectorFilter");
+const roomFilter = document.querySelector("#roomFilter");
+const areaFilter = document.querySelector("#areaFilter");
+const priceFilter = document.querySelector("#priceFilter");
+const resetFiltersButton = document.querySelector("#resetFiltersButton");
+const applyFilterButton = document.querySelector("#applyFilterButton");
+const filterSummary = document.querySelector("#filterSummary");
+const propertyList = document.querySelector("#propertyList");
+const emptyState = document.querySelector("#emptyState");
+const filterControls = [searchInput, regionFilter, sectorFilter, roomFilter, areaFilter, priceFilter];
+
+function setFilterModalVisibility(visible) {
+  filterModal.classList.toggle("hidden", !visible);
+  document.body.classList.toggle("overflow-hidden", visible);
+  openFilterButton.setAttribute("aria-expanded", String(visible));
+}
+
+function getActiveFilterCount() {
+  return [
+    regionFilter.value,
+    sectorFilter.value,
+    roomFilter.value,
+    areaFilter.value,
+    priceFilter.value
+  ].filter(Boolean).length;
+}
+
+function getSelectedPriceRange(value) {
+  if (!value) {
+    return null;
+  }
+
+  if (value.endsWith("+")) {
+    return { min: Number(value.replace("+", "")), max: Number.POSITIVE_INFINITY };
+  }
+
+  const [min, max] = value.split("-").map(Number);
+  return { min, max };
+}
+
+function getSelectedAreaRange(value) {
+  if (!value) {
+    return null;
+  }
+
+  if (value === "144+") {
+    return { min: 144, max: Number.POSITIVE_INFINITY };
+  }
+
+  const [min, max] = value.split("-").map(Number);
+  return { min, max };
+}
+
+function getPropertySizeRange(property) {
+  const match = property.sizeRange.match(/(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/);
+  if (!match) {
+    return { min: 0, max: Number.POSITIVE_INFINITY };
+  }
+
+  return {
+    min: Number(match[1]),
+    max: Number(match[2])
+  };
+}
+
+function getPropertyRooms(property) {
+  if (Array.isArray(property.roomTypes)) {
+    return property.roomTypes;
+  }
+
+  const rooms = [...property.unitMeta.matchAll(/(\d+)房/g)].map((match) => Number(match[1]));
+  return rooms.length ? rooms : [];
+}
+
+function populateFilterOptions() {
+  const regions = [...new Set(properties.map((property) => property.region))];
+  const sectors = [...new Set(properties.map((property) => property.sector))];
+  const rooms = [...new Set(properties.flatMap(getPropertyRooms))].sort((left, right) => left - right);
+
+  regionFilter.innerHTML = [
+    '<option value="">全部区域</option>',
+    ...regions.map((region) => `<option value="${region}">${region}</option>`)
+  ].join("");
+
+  sectorFilter.innerHTML = [
+    '<option value="">全部板块</option>',
+    ...sectors.map((sector) => `<option value="${sector}">${sector}</option>`)
+  ].join("");
+
+  roomFilter.innerHTML = [
+    '<option value="">全部户型</option>',
+    ...rooms.map((room) => `<option value="${room}">${room}室</option>`)
+  ].join("");
+}
+
+function getBadgeClasses(tone) {
+  return tone === "primary"
+    ? "bg-primary/90 text-on-primary"
+    : "bg-tertiary-fixed/90 text-on-tertiary-fixed";
+}
+
+function getProjectDetailUrl(property) {
+  const projectId = property.projectId || "home-greenland";
+  return `${PROJECT_DETAIL_PATH}?projectId=${encodeURIComponent(projectId)}`;
+}
+
+function renderProperties(list) {
+  propertyList.innerHTML = list.map((property) => {
+    const imageSlides = property.images.map((image, index) => `
+<div class="flex-none ${index === 0 ? "w-full" : "w-[85%]"} snap-start relative" data-slide-index="${index + 1}">
+<img alt="${property.name} 图片 ${index + 1}" class="w-full h-full object-cover" loading="lazy" src="${image}"/>
+${index === 0 ? `<div class="absolute top-3 left-3 flex gap-2"><span class="${getBadgeClasses(property.badgeTone)} px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider font-label backdrop-blur-md">${property.badge}</span></div>` : ""}
+</div>`.trim()).join("");
+
+    const tagList = property.tags.map((tag) => `<span class="bg-surface-container-high px-2.5 py-0.5 rounded-full text-[11px] font-label font-semibold text-primary">${tag}</span>`).join("");
+
+    return `
+<div class="group relative bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/10 shadow-sm transition-all duration-300 active:ring-2 active:ring-primary/20">
+<a aria-label="查看项目详情" class="card-link" href="${getProjectDetailUrl(property)}"></a>
+<div class="card-media relative overflow-x-auto flex snap-x snap-mandatory hide-scrollbar gap-2 h-52 scroll-smooth" data-carousel>
+${imageSlides}
+<div class="pointer-events-none absolute bottom-3 right-3 z-30 rounded-full bg-black/45 px-2.5 py-1 text-[10px] font-label font-bold tracking-wide text-white backdrop-blur-md" data-carousel-indicator>1/${property.images.length}</div>
+</div>
+<div class="p-4">
+<div class="flex flex-col gap-2 mb-3">
+<div>
+<h2 class="text-[24px] font-bold font-headline text-primary leading-tight">${property.name}</h2>
+<p class="text-secondary font-body flex items-center gap-1 text-xs mt-1">
+<svg aria-hidden="true" class="h-[14px] w-[14px] flex-none" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 4.78 5.34 11.74 6.07 12.68a1.16 1.16 0 0 0 1.86 0C13.66 20.74 19 13.78 19 9a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/></svg>
+${property.location}
+</p>
+</div>
+<div>
+<p class="text-lg font-extrabold font-headline text-primary">¥${property.priceMin}万 - ${property.priceMax}万</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-1.5 mb-4">
+${tagList}
+</div>
+<div class="grid grid-cols-2 gap-x-3 gap-y-4 py-4 border-t border-outline-variant/10">
+<div class="space-y-0.5">
+<p class="text-[9px] font-label font-bold text-outline uppercase tracking-wider">面积区间</p>
+<p class="text-xs font-semibold font-body">${property.sizeRange}</p>
+</div>
+<div class="space-y-0.5">
+<p class="text-[9px] font-label font-bold text-outline uppercase tracking-wider">所属区域</p>
+<p class="text-xs font-semibold font-body">${property.region}</p>
+</div>
+<div class="space-y-0.5">
+<p class="text-[9px] font-label font-bold text-outline uppercase tracking-wider">所属板块</p>
+<p class="text-xs font-semibold font-body">${property.sector}</p>
+</div>
+<div class="space-y-0.5">
+<p class="text-[9px] font-label font-bold text-outline uppercase tracking-wider">梯户比</p>
+<p class="text-xs font-semibold font-body">${property.elevatorRatio}</p>
+</div>
+</div>
+<div class="mt-4 flex justify-center">
+<span class="text-[10px] text-outline flex items-center gap-1 font-label">
+点击进入项目详情
+<svg aria-hidden="true" class="h-[12px] w-[12px] flex-none" fill="currentColor" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6-1.41-1.41L12.17 12 7.59 7.41 9 6Z"/></svg>
+</span>
+</div>
+</div>
+</div>`.trim();
+  }).join("");
+  bindMediaCarousels();
+}
+
+function getCurrentSlideIndex(track) {
+  const slides = Array.from(track.querySelectorAll("[data-slide-index]"));
+  if (!slides.length) {
+    return 1;
+  }
+
+  const closestSlide = slides.reduce((best, slide, index) => {
+    const delta = Math.abs(track.scrollLeft - slide.offsetLeft);
+    if (delta < best.delta) {
+      return { index, delta };
+    }
+    return best;
+  }, { index: 0, delta: Number.POSITIVE_INFINITY });
+
+  return closestSlide.index + 1;
+}
+
+function bindMediaCarousels() {
+  const carousels = propertyList.querySelectorAll("[data-carousel]");
+  carousels.forEach((track) => {
+    const indicator = track.querySelector("[data-carousel-indicator]");
+    const slides = track.querySelectorAll("[data-slide-index]");
+    if (!indicator || !slides.length) {
+      return;
+    }
+
+    let frameId = 0;
+    const syncIndicator = () => {
+      indicator.textContent = `${getCurrentSlideIndex(track)}/${slides.length}`;
+    };
+
+    track.addEventListener("scroll", () => {
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(syncIndicator);
+    }, { passive: true });
+
+    syncIndicator();
+  });
+}
+
+function applyFilters() {
+  const keyword = searchInput.value.trim().toLowerCase();
+  const region = regionFilter.value;
+  const sector = sectorFilter.value;
+  const room = roomFilter.value;
+  const areaRange = getSelectedAreaRange(areaFilter.value);
+  const priceRange = getSelectedPriceRange(priceFilter.value);
+  const hasActiveFilters = Boolean(keyword || region || sector || room || areaFilter.value || priceFilter.value);
+  const filteredProperties = properties.filter((property) => {
+    const searchPool = [
+      property.name,
+      property.location,
+      property.region,
+      property.sector,
+      ...getPropertyRooms(property).map((roomType) => `${roomType}室`),
+      ...property.tags,
+      ...property.features
+    ].join(" ").toLowerCase();
+    const sizeRange = getPropertySizeRange(property);
+
+    const matchesKeyword = !keyword || searchPool.includes(keyword);
+    const matchesRegion = !region || property.region === region;
+    const matchesSector = !sector || property.sector === sector;
+    const matchesRoom = !room || getPropertyRooms(property).includes(Number(room));
+    const matchesArea = !areaRange || (sizeRange.min <= areaRange.max && sizeRange.max >= areaRange.min);
+    const matchesPrice = !priceRange || (property.priceMin <= priceRange.max && property.priceMax >= priceRange.min);
+
+    return matchesKeyword && matchesRegion && matchesSector && matchesRoom && matchesArea && matchesPrice;
+  });
+
+  renderProperties(filteredProperties);
+
+  filterSummary.textContent = hasActiveFilters
+    ? `筛选后找到 ${filteredProperties.length} 个在售楼盘`
+    : `共 ${filteredProperties.length} 个在售楼盘`;
+  emptyState.classList.toggle("hidden", filteredProperties.length !== 0);
+  resetFiltersButton.disabled = !hasActiveFilters;
+  applyFilterButton.textContent = `查看 ${filteredProperties.length} 个楼盘`;
+  const activeFilterCount = getActiveFilterCount();
+  openFilterButton.textContent = activeFilterCount ? `筛选 · ${activeFilterCount}` : "筛选";
+}
+
+openFilterButton.addEventListener("click", () => {
+  setFilterModalVisibility(true);
+});
+
+closeFilterButton.addEventListener("click", () => {
+  setFilterModalVisibility(false);
+});
+
+filterBackdrop.addEventListener("click", () => {
+  setFilterModalVisibility(false);
+});
+
+applyFilterButton.addEventListener("click", () => {
+  setFilterModalVisibility(false);
+});
+
+resetFiltersButton.addEventListener("click", () => {
+  regionFilter.value = "";
+  sectorFilter.value = "";
+  roomFilter.value = "";
+  areaFilter.value = "";
+  priceFilter.value = "";
+  applyFilters();
+});
+
+filterControls.forEach((control) => {
+  const eventName = control.tagName === "INPUT" ? "input" : "change";
+  control.addEventListener(eventName, applyFilters);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !filterModal.classList.contains("hidden")) {
+    setFilterModalVisibility(false);
+  }
+});
+
+populateFilterOptions();
+setFilterModalVisibility(false);
+applyFilters();
+</script>
+</body></html>
