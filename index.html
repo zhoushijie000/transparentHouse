@@ -136,6 +136,36 @@
             touch-action: pan-x;
             -webkit-overflow-scrolling: touch;
         }
+        .property-follow {
+            position: relative;
+            z-index: 20;
+            display: inline-grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            border: 1px solid rgba(192, 200, 204, 0.45);
+            border-radius: 50%;
+            background: #ffffff;
+            color: #637083;
+            transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+        .property-follow svg {
+            width: 22px;
+            height: 22px;
+            fill: transparent;
+            stroke: currentColor;
+            stroke-width: 2;
+            transition: fill 0.18s ease;
+        }
+        .property-follow.is-followed {
+            border-color: rgba(255, 78, 109, 0.2);
+            background: #fff4f7;
+            color: #ff4e6d;
+        }
+        .property-follow.is-followed svg {
+            fill: currentColor;
+        }
         @media (max-width: 430px) {
             .mobile-app {
                 box-shadow: none;
@@ -426,6 +456,7 @@ const properties = [
 ];
 
 const PROJECT_DETAIL_PATH = "./project-detail.html";
+const FOLLOWED_PROJECTS_KEY = "transparentHouse:followedProjects";
 const propertyFilterMeta = [
   { projectId: "home-greenland", region: "天府新区", roomTypes: [3, 4] },
   { projectId: "home-jinjiang", region: "锦江区", roomTypes: [4, 5] },
@@ -554,8 +585,30 @@ function getProjectDetailUrl(property) {
   return `${PROJECT_DETAIL_PATH}?projectId=${encodeURIComponent(projectId)}`;
 }
 
+function getFollowedProjects() {
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(FOLLOWED_PROJECTS_KEY) || "[]");
+    return new Set(Array.isArray(stored) ? stored : []);
+  } catch (_error) {
+    return new Set();
+  }
+}
+
+function toggleFollowedProject(projectId) {
+  const followed = getFollowedProjects();
+  if (followed.has(projectId)) {
+    followed.delete(projectId);
+  } else {
+    followed.add(projectId);
+  }
+  window.localStorage.setItem(FOLLOWED_PROJECTS_KEY, JSON.stringify([...followed]));
+  return followed.has(projectId);
+}
+
 function renderProperties(list) {
+  const followedProjects = getFollowedProjects();
   propertyList.innerHTML = list.map((property) => {
+    const isFollowed = followedProjects.has(property.projectId);
     const imageSlides = property.images.map((image, index) => `
 <div class="flex-none ${index === 0 ? "w-full" : "w-[85%]"} snap-start relative" data-slide-index="${index + 1}">
 <img alt="${property.name} 图片 ${index + 1}" class="w-full h-full object-cover" loading="lazy" src="${image}"/>
@@ -573,12 +626,17 @@ ${imageSlides}
 </div>
 <div class="p-4">
 <div class="flex flex-col gap-2 mb-3">
-<div>
+<div class="flex items-start justify-between gap-3">
+<div class="min-w-0">
 <h2 class="text-[24px] font-bold font-headline text-primary leading-tight">${property.name}</h2>
 <p class="text-secondary font-body flex items-center gap-1 text-xs mt-1">
 <svg aria-hidden="true" class="h-[14px] w-[14px] flex-none" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 4.78 5.34 11.74 6.07 12.68a1.16 1.16 0 0 0 1.86 0C13.66 20.74 19 13.78 19 9a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/></svg>
 ${property.location}
 </p>
+</div>
+<button class="property-follow card-inner-action ${isFollowed ? "is-followed" : ""}" type="button" data-follow-project="${property.projectId}" data-project-name="${property.name}" aria-label="${isFollowed ? "取消关注" : "关注"} ${property.name}" aria-pressed="${isFollowed}">
+<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"/></svg>
+</button>
 </div>
 <div>
 <p class="text-lg font-extrabold font-headline text-primary">¥${property.priceMin}万 - ${property.priceMax}万</p>
@@ -616,6 +674,19 @@ ${tagList}
   }).join("");
   bindMediaCarousels();
 }
+
+propertyList.addEventListener("click", (event) => {
+  const followButton = event.target.closest("[data-follow-project]");
+  if (!followButton) {
+    return;
+  }
+  event.preventDefault();
+  event.stopPropagation();
+  const followed = toggleFollowedProject(followButton.dataset.followProject);
+  followButton.classList.toggle("is-followed", followed);
+  followButton.setAttribute("aria-pressed", String(followed));
+  followButton.setAttribute("aria-label", `${followed ? "取消关注" : "关注"} ${followButton.dataset.projectName}`);
+});
 
 function getCurrentSlideIndex(track) {
   const slides = Array.from(track.querySelectorAll("[data-slide-index]"));

@@ -37,6 +37,7 @@ const refs = {
   priceLabel: document.getElementById("priceLabel"),
   priceText: document.getElementById("priceText"),
   infoRows: document.getElementById("infoRows"),
+  certificateRecords: document.getElementById("certificateRecords"),
   addressText: document.getElementById("addressText"),
   layoutTypeFilters: document.getElementById("layoutTypeFilters"),
   layoutPlanList: document.getElementById("layoutPlanList"),
@@ -56,6 +57,8 @@ const refs = {
   onePriceSummary: document.getElementById("onePriceSummary"),
   onePriceList: document.getElementById("onePriceList")
 };
+
+const FOLLOWED_PROJECTS_KEY = "transparentHouse:followedProjects";
 
 const state = {
   followed: false,
@@ -558,6 +561,8 @@ function buildPresales(model) {
       id: `cert-${certIndex + 1}`,
       no: `蓉预售字第${20260400 + (seed % 300) + certIndex * 37}号`,
       date,
+      bank: ["中国建设银行成都分行", "中国工商银行成都分行", "成都银行股份有限公司"][((seed + certIndex) % 3)],
+      account: `5101 ${String(1000 + ((seed + certIndex * 47) % 9000)).padStart(4, "0")} ${String(1000 + ((seed + certIndex * 19) % 9000)).padStart(4, "0")} ${String(1000 + ((seed + certIndex * 31) % 9000)).padStart(4, "0")}`,
       rooms
     };
   });
@@ -858,6 +863,23 @@ function renderInfoRows(rows) {
   `).join("");
 }
 
+function renderCertificateRecords() {
+  refs.certificateRecords.innerHTML = state.model.presales.map((presale, index) => `
+    <article class="certificate-record">
+      <div class="certificate-record__head">
+        <strong>第${index + 1}次取证</strong>
+        <time>${presale.date}</time>
+      </div>
+      <div class="certificate-record__rows">
+        <div><span>预/现售证号</span><strong>${presale.no}</strong></div>
+        <div><span>取证时间</span><strong>${presale.date}</strong></div>
+        <div><span>监管银行</span><strong>${presale.bank}</strong></div>
+        <div><span>监管账户</span><strong>${presale.account}</strong></div>
+      </div>
+    </article>
+  `).join("");
+}
+
 function renderSalesInfo() {
   const generatedRooms = state.model.presales.flatMap((presale) => presale.rooms);
   const total = Number(String(state.model.totalHomesText || "").replace(/\D/g, "")) || generatedRooms.length;
@@ -1029,8 +1051,24 @@ function renderFollowState() {
   refs.followButton.classList.toggle("is-active", state.followed);
 }
 
+function getFollowedProjects() {
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(FOLLOWED_PROJECTS_KEY) || "[]");
+    return new Set(Array.isArray(stored) ? stored : []);
+  } catch (_error) {
+    return new Set();
+  }
+}
+
 function setFollowed(nextValue) {
   state.followed = nextValue;
+  const followed = getFollowedProjects();
+  if (nextValue) {
+    followed.add(state.projectId);
+  } else {
+    followed.delete(state.projectId);
+  }
+  window.localStorage.setItem(FOLLOWED_PROJECTS_KEY, JSON.stringify([...followed]));
   renderFollowState();
 }
 
@@ -1055,6 +1093,7 @@ function renderPage(model) {
   renderMedia("effect");
   renderTags(state.model.tags);
   renderInfoRows(state.model.infoRows);
+  renderCertificateRecords();
   renderSalesInfo();
   renderNewsTimeline();
   renderLayoutPlans();
@@ -1225,6 +1264,7 @@ function initPage() {
     return;
   }
   state.projectId = projectId;
+  state.followed = getFollowedProjects().has(projectId);
   renderPage(buildModel(record));
   bindEvents();
   updateDetailTabsVisibility();

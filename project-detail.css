@@ -1998,6 +1998,63 @@ body:has(.project-detail-page) {
   line-height: 1.45;
 }
 
+.project-detail-page .certificate-records {
+  display: grid;
+  gap: 12px;
+}
+
+.project-detail-page .certificate-record {
+  overflow: hidden;
+  border: 1px solid #e3e8f2;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.project-detail-page .certificate-record__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 12px;
+  background: #f4f7ff;
+}
+
+.project-detail-page .certificate-record__head strong {
+  color: #30343a;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.project-detail-page .certificate-record__head time {
+  color: #75849a;
+  font-size: 12px;
+}
+
+.project-detail-page .certificate-record__rows {
+  padding: 4px 12px 8px;
+}
+
+.project-detail-page .certificate-record__rows div {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 8px;
+  padding: 9px 0;
+}
+
+.project-detail-page .certificate-record__rows span {
+  color: #9098a3;
+  font-size: 13px;
+}
+
+.project-detail-page .certificate-record__rows strong {
+  min-width: 0;
+  color: #30343a;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+  word-break: break-all;
+}
+
 .project-detail-page .expand-more {
   display: block;
   width: 100%;
