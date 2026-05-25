@@ -864,10 +864,10 @@ function renderInfoRows(rows) {
 }
 
 function renderCertificateRecords() {
-  refs.certificateRecords.innerHTML = state.model.presales.map((presale, index) => `
+  refs.certificateRecords.innerHTML = state.model.presales.map((presale) => `
     <article class="certificate-record">
       <div class="certificate-record__head">
-        <strong>第${index + 1}次取证</strong>
+        <strong>${presale.no}</strong>
         <time>${presale.date}</time>
       </div>
       <div class="certificate-record__rows">

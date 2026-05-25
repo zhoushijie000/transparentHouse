@@ -1999,11 +1999,23 @@ body:has(.project-detail-page) {
 }
 
 .project-detail-page .certificate-records {
-  display: grid;
+  display: flex;
   gap: 12px;
+  margin: 0 -16px;
+  padding: 0 16px 4px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.project-detail-page .certificate-records::-webkit-scrollbar {
+  display: none;
 }
 
 .project-detail-page .certificate-record {
+  flex: 0 0 calc(100% - 28px);
+  scroll-snap-align: start;
   overflow: hidden;
   border: 1px solid #e3e8f2;
   border-radius: 6px;
@@ -2020,12 +2032,17 @@ body:has(.project-detail-page) {
 }
 
 .project-detail-page .certificate-record__head strong {
+  min-width: 0;
+  overflow: hidden;
   color: #30343a;
   font-size: 15px;
   font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .project-detail-page .certificate-record__head time {
+  flex: 0 0 auto;
   color: #75849a;
   font-size: 12px;
 }
