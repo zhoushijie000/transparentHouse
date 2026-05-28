@@ -2309,62 +2309,6 @@ body:has(.project-detail-page) {
   background: #346df1;
 }
 
-.project-detail-page .news-timeline {
-  border: 1px solid #dce6ff;
-  border-radius: 4px;
-  padding: 14px 16px;
-  background: #f7f9ff;
-}
-
-.project-detail-page .news-item {
-  position: relative;
-  padding-left: 24px;
-  padding-bottom: 22px;
-}
-
-.project-detail-page .news-item:last-child {
-  padding-bottom: 0;
-}
-
-.project-detail-page .news-item::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 5px;
-  width: 10px;
-  height: 10px;
-  border: 4px solid #e8efff;
-  border-radius: 50%;
-  background: #346df1;
-}
-
-.project-detail-page .news-item::after {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: 24px;
-  bottom: 0;
-  width: 1px;
-  background: #dce6ff;
-}
-
-.project-detail-page .news-item:last-child::after {
-  display: none;
-}
-
-.project-detail-page .news-item time {
-  display: block;
-  color: #9098a3;
-  font-size: 14px;
-}
-
-.project-detail-page .news-item strong {
-  display: block;
-  margin-top: 8px;
-  color: #2f3338;
-  font-size: 16px;
-}
-
 .project-detail-page .support-map {
   height: 170px;
   border-radius: 0;

@@ -50,7 +50,6 @@ const refs = {
   salesDonut: document.getElementById("salesDonut"),
   legendAvailableText: document.getElementById("legendAvailableText"),
   legendSoldText: document.getElementById("legendSoldText"),
-  newsTimeline: document.getElementById("newsTimeline"),
   projectIntroLong: document.getElementById("projectIntroLong"),
   supportMap: document.getElementById("supportMap"),
   supportTabs: document.getElementById("supportTabs"),
@@ -933,19 +932,6 @@ function renderSalesInfo() {
   refs.salesDonut.innerHTML = `<strong>${total}</strong><span>总套数</span>`;
 }
 
-function renderNewsTimeline() {
-  const presale = state.model.presales[0];
-  refs.newsTimeline.innerHTML = [
-    { date: state.model.deliveryText || "2028-12", title: "项目交付" },
-    { date: presale?.date || "2024-10-24", title: `取得商品房预售许可证${presale?.no || ""}` }
-  ].map((item) => `
-    <article class="news-item">
-      <time>${item.date}</time>
-      <strong>${item.title}</strong>
-    </article>
-  `).join("");
-}
-
 function renderLayoutPlans() {
   const plans = state.model.layoutPlans || [];
   const types = [...new Set(plans.map((plan) => plan.roomType))];
@@ -1131,7 +1117,6 @@ function renderPage(model) {
   renderInfoRows(state.model.infoRows);
   renderCertificateRecords();
   renderSalesInfo();
-  renderNewsTimeline();
   renderLayoutPlans();
   renderSupport(state.model.supportItems);
   renderOnePrice();
