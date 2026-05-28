@@ -1974,6 +1974,10 @@ body:has(.project-detail-page) {
   display: none;
 }
 
+.project-detail-page .info-rows.is-expanded .info-row {
+  display: grid;
+}
+
 .project-detail-page .address-card {
   display: flex;
   justify-content: space-between;
@@ -2022,33 +2026,8 @@ body:has(.project-detail-page) {
   background: #fff;
 }
 
-.project-detail-page .certificate-record__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 11px 12px;
-  background: #f4f7ff;
-}
-
-.project-detail-page .certificate-record__head strong {
-  min-width: 0;
-  overflow: hidden;
-  color: #30343a;
-  font-size: 15px;
-  font-weight: 700;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.project-detail-page .certificate-record__head time {
-  flex: 0 0 auto;
-  color: #75849a;
-  font-size: 12px;
-}
-
 .project-detail-page .certificate-record__rows {
-  padding: 4px 12px 8px;
+  padding: 8px 12px;
 }
 
 .project-detail-page .certificate-record__rows div {

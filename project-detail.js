@@ -1,4 +1,4 @@
-(() => {
+﻿(() => {
 const refs = {
   backButton: document.getElementById("backButton"),
   followButton: document.getElementById("followButton"),
@@ -37,6 +37,7 @@ const refs = {
   priceLabel: document.getElementById("priceLabel"),
   priceText: document.getElementById("priceText"),
   infoRows: document.getElementById("infoRows"),
+  expandInfoButton: document.querySelector(".expand-more"),
   certificateRecords: document.getElementById("certificateRecords"),
   addressText: document.getElementById("addressText"),
   layoutTypeFilters: document.getElementById("layoutTypeFilters"),
@@ -68,6 +69,7 @@ const state = {
   activeLayoutType: "all",
   activeSupportType: "education",
   activeAlbumIndex: 0,
+  infoExpanded: false,
   model: null
 };
 
@@ -294,6 +296,27 @@ function normalizeOpenBuildings(open) {
   return open.replace(/-/g, "、");
 }
 
+function getPlotRatioFromTags(tags, fallback = "2.0") {
+  const match = (tags || []).join(" ").match(/容积率\s*(\d+(?:\.\d+)?)/);
+  return match ? match[1] : fallback;
+}
+
+function buildPropertyMetrics(seed, tags, fallbackPlotRatio) {
+  const companies = [
+    "成都透明物业服务有限公司",
+    "万科物业服务有限公司",
+    "龙湖智创生活",
+    "华润万象生活"
+  ];
+  return {
+    plotRatioText: getPlotRatioFromTags(tags, fallbackPlotRatio),
+    greenRateText: `${32 + (seed % 12)}%`,
+    propertyFeeText: `${(1.8 + (seed % 9) * 0.25).toFixed(2)}元/㎡/月`,
+    propertyCompanyText: companies[seed % companies.length],
+    propertyRightsText: "70年"
+  };
+}
+
 function baseModelExtras(id, openMonthOffset = 0) {
   const seed = hashString(id);
   const openMonth = 4 + ((seed + openMonthOffset) % 7);
@@ -309,6 +332,7 @@ function buildHomeDetailModel(project) {
   const extra = baseModelExtras(project.id);
   const totalHomes = project.stock * 8 + 128 + (extra.seed % 36);
   const parkingSpaces = Math.round(totalHomes * 1.08);
+  const propertyMetrics = buildPropertyMetrics(extra.seed, project.tags, "2.0");
   return {
     projectId: project.id,
     name: project.name,
@@ -329,6 +353,7 @@ function buildHomeDetailModel(project) {
     parkingText: `${parkingSpaces}`,
     decorationText: project.decoration,
     ladderText: project.ladder,
+    ...propertyMetrics,
     addressText: `${project.district} · ${project.sector} · ${project.name}营销中心`,
     phone: extra.phone,
     layouts: project.layout,
@@ -339,16 +364,17 @@ function buildHomeDetailModel(project) {
       [project.priceLabel, project.priceText],
       ["主力面积", project.areaText],
       ["在售套数", `${project.stock}套`],
-      ["开盘时间", extra.openTimeText],
+      ["交付时间", extra.deliveryText],
       ["开盘楼栋", project.open],
-      ["预计交房", extra.deliveryText],
       ["总户数", `${totalHomes}户`],
       ["车位数", `${parkingSpaces}`],
-      ["装修标准", project.decoration],
       ["梯户比", project.ladder],
-      ["主力户型", project.layout.join(" / ")],
-      ["项目亮点", project.tags.join(" · ")],
-      ["咨询电话", extra.phone]
+      ["装修类型", project.decoration],
+      ["容积率", propertyMetrics.plotRatioText],
+      ["绿化率", propertyMetrics.greenRateText],
+      ["物业费", propertyMetrics.propertyFeeText],
+      ["物业公司", propertyMetrics.propertyCompanyText],
+      ["产权年限", propertyMetrics.propertyRightsText],
     ],
     qrTitle: `${project.name} 项目二维码`,
     qrDesc: `扫码可直接打开 ${project.name} 详情`
@@ -362,6 +388,7 @@ function buildPrototypeDetailModel(project) {
   const areaText = `${Math.round(project.areaMin)}-${Math.round(project.areaMax)}㎡`;
   const parkingSpaces = Math.round(project.total * 1.08);
   const openBuildingsText = normalizeOpenBuildings(project.open);
+  const propertyMetrics = buildPropertyMetrics(extra.seed, project.tags, "2.0");
   return {
     projectId: project.id,
     name: project.name,
@@ -382,6 +409,7 @@ function buildPrototypeDetailModel(project) {
     parkingText: `${parkingSpaces}`,
     decorationText: decoration,
     ladderText: ladder,
+    ...propertyMetrics,
     addressText: `${project.district} · ${project.name}营销中心`,
     phone: extra.phone,
     layouts: project.layout,
@@ -390,18 +418,19 @@ function buildPrototypeDetailModel(project) {
       ["所属区域", project.district],
       ["参考单价", project.record],
       ["主力面积", areaText],
-      ["开盘时间", extra.openTimeText],
+      ["交付时间", extra.deliveryText],
       ["开盘楼栋", project.open],
-      ["预计交房", extra.deliveryText],
       ["总户数", `${project.total}户`],
       ["在售套数", `${project.stock}套`],
       ["近30天网签", `${project.signed30}套`],
       ["车位数", `${parkingSpaces}`],
-      ["装修标准", decoration],
       ["梯户比", ladder],
-      ["主力户型", project.layout.join(" / ")],
-      ["项目亮点", project.tags.join(" · ")],
-      ["咨询电话", extra.phone]
+      ["装修类型", decoration],
+      ["容积率", propertyMetrics.plotRatioText],
+      ["绿化率", propertyMetrics.greenRateText],
+      ["物业费", propertyMetrics.propertyFeeText],
+      ["物业公司", propertyMetrics.propertyCompanyText],
+      ["产权年限", propertyMetrics.propertyRightsText],
     ],
     qrTitle: `${project.name} 项目二维码`,
     qrDesc: `扫码可直接打开 ${project.name} 详情`
@@ -420,6 +449,7 @@ function buildMapDetailModel(record) {
   const decoration = project.tags.includes("精装") ? "精装" : project.tags.includes("清水") ? "清水" : sector.tier === "core" ? "精装" : "清水";
   const buildingType = project.tags.includes("小高层") ? "小高层" : project.tags.includes("洋房") ? "洋房" : sector.tier === "outer" ? "小高层" : "高层";
   const openBuildingsText = `${1 + (extra.seed % 3)}栋、${2 + (extra.seed % 4)}栋`;
+  const propertyMetrics = buildPropertyMetrics(extra.seed, project.tags, plotRatio);
   return {
     projectId: project.id,
     name: project.name,
@@ -440,6 +470,7 @@ function buildMapDetailModel(record) {
     parkingText: `${parkingSpaces}`,
     decorationText: decoration,
     ladderText: ladder,
+    ...propertyMetrics,
     addressText: `${sector.name} · ${project.name}营销中心`,
     phone: extra.phone,
     layouts: [
@@ -452,17 +483,19 @@ function buildMapDetailModel(record) {
       ["所属板块", sector.name],
       ["参考单价", project.price],
       ["主力面积", `${area.min}-${area.max}㎡`],
-      ["开盘时间", extra.openTimeText],
+      ["交付时间", extra.deliveryText],
       ["开盘楼栋", openBuildingsText],
-      ["预计交房", extra.deliveryText],
       ["总户数", `${totalHomes}户`],
       ["车位数", `${parkingSpaces}`],
-      ["装修标准", decoration],
       ["梯户比", ladder],
-      ["容积率", plotRatio],
+      ["装修类型", decoration],
+      ["容积率", propertyMetrics.plotRatioText],
+      ["绿化率", propertyMetrics.greenRateText],
+      ["物业费", propertyMetrics.propertyFeeText],
+      ["物业公司", propertyMetrics.propertyCompanyText],
+      ["产权年限", propertyMetrics.propertyRightsText],
       ["主力客群", sector.audience],
       ["板块特点", sector.focus],
-      ["咨询电话", extra.phone],
       ["参考总价", `约${num(Math.round((area.min * priceValue) / 10000))}万起`]
     ],
     qrTitle: `${project.name} 项目二维码`,
@@ -855,21 +888,23 @@ function renderTags(tags) {
 }
 
 function renderInfoRows(rows) {
+  refs.infoRows.classList.toggle("is-expanded", state.infoExpanded);
   refs.infoRows.innerHTML = rows.map(([label, value]) => `
     <div class="info-row">
       <span>${label}</span>
       <strong>${value}</strong>
     </div>
   `).join("");
+  if (refs.expandInfoButton) {
+    const hasHiddenRows = rows.length > 7;
+    refs.expandInfoButton.hidden = !hasHiddenRows;
+    refs.expandInfoButton.textContent = state.infoExpanded ? "收起部分信息" : "展开全部信息";
+  }
 }
 
 function renderCertificateRecords() {
   refs.certificateRecords.innerHTML = state.model.presales.map((presale) => `
     <article class="certificate-record">
-      <div class="certificate-record__head">
-        <strong>${presale.no}</strong>
-        <time>${presale.date}</time>
-      </div>
       <div class="certificate-record__rows">
         <div><span>预/现售证号</span><strong>${presale.no}</strong></div>
         <div><span>取证时间</span><strong>${presale.date}</strong></div>
@@ -901,7 +936,7 @@ function renderSalesInfo() {
 function renderNewsTimeline() {
   const presale = state.model.presales[0];
   refs.newsTimeline.innerHTML = [
-    { date: state.model.openTimeText || "2024-10-24", title: "楼盘开盘" },
+    { date: state.model.deliveryText || "2028-12", title: "项目交付" },
     { date: presale?.date || "2024-10-24", title: `取得商品房预售许可证${presale?.no || ""}` }
   ].map((item) => `
     <article class="news-item">
@@ -1074,6 +1109,7 @@ function setFollowed(nextValue) {
 
 function renderPage(model) {
   state.model = enrichModel(model);
+  state.infoExpanded = false;
   document.title = `${state.model.name} - 透明房产`;
   setText(refs.statusBadge, state.model.status);
   setText(refs.districtText, `成都 · ${state.model.districtText}`);
@@ -1188,6 +1224,14 @@ function bindEvents() {
   refs.detailTabs.forEach((button) => {
     button.addEventListener("click", () => setActiveDetailTab(button.dataset.detailTab));
   });
+  refs.expandInfoButton?.addEventListener("click", () => {
+    const nextExpanded = !state.infoExpanded;
+    state.infoExpanded = nextExpanded;
+    renderInfoRows(state.model.infoRows);
+    if (nextExpanded) {
+      refs.infoRows.querySelector(".info-row:nth-child(8)")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
   refs.layoutTypeFilters.addEventListener("click", (event) => {
     const button = event.target.closest("[data-layout-type]");
     if (!button) {
@@ -1272,3 +1316,5 @@ function initPage() {
 
 initPage();
 })();
+
+
