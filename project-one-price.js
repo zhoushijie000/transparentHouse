@@ -5,17 +5,12 @@ const refs = {
   projectName: document.getElementById("projectName"),
   summaryMeta: document.getElementById("summaryMeta"),
   presaleTabs: document.getElementById("presaleTabs"),
-  layoutFilter: document.getElementById("layoutFilter"),
-  roomAreaFilter: document.getElementById("roomAreaFilter"),
-  totalPriceFilter: document.getElementById("totalPriceFilter"),
-  saleOnlyToggle: document.getElementById("saleOnlyToggle"),
   onePriceList: document.getElementById("onePriceList")
 };
 
 const state = {
   projectId: "",
   activePresaleId: "",
-  onlyOnSale: false,
   model: null
 };
 
@@ -222,29 +217,8 @@ function buildPresales(model) {
   });
 }
 
-function getSelectedRange(value) {
-  if (!value) {
-    return null;
-  }
-  if (value.endsWith("+")) {
-    return { min: Number(value.replace("+", "")), max: Number.POSITIVE_INFINITY };
-  }
-  const [min, max] = value.split("-").map(Number);
-  return { min, max };
-}
-
 function getActivePresale() {
   return state.model.presales.find((presale) => presale.id === state.activePresaleId) || state.model.presales[0];
-}
-
-function roomMatchesFilters(room) {
-  const layout = refs.layoutFilter.value;
-  const areaRange = getSelectedRange(refs.roomAreaFilter.value);
-  const priceRange = getSelectedRange(refs.totalPriceFilter.value);
-  return (!layout || room.roomType === layout)
-    && (!areaRange || (room.area >= areaRange.min && room.area < areaRange.max))
-    && (!priceRange || (room.totalPrice >= priceRange.min && room.totalPrice < priceRange.max))
-    && (!state.onlyOnSale || room.status === "在售");
 }
 
 function groupRooms(rooms) {
@@ -266,17 +240,9 @@ function renderPresaleTabs() {
   `).join("");
 }
 
-function populateLayoutFilter() {
-  const roomTypes = [...new Set(state.model.presales.flatMap((presale) => presale.rooms.map((room) => room.roomType)))];
-  refs.layoutFilter.innerHTML = [
-    '<option value="">全部户型</option>',
-    ...roomTypes.map((roomType) => `<option value="${roomType}">${roomType}</option>`)
-  ].join("");
-}
-
 function renderRooms() {
   const presale = getActivePresale();
-  const rooms = presale.rooms.filter(roomMatchesFilters);
+  const rooms = presale.rooms;
   const grouped = groupRooms(rooms);
   if (!rooms.length) {
     refs.onePriceList.innerHTML = '<div class="empty-state">没有符合筛选条件的房源，请调整筛选项</div>';
@@ -329,15 +295,6 @@ function bindEvents() {
     renderPresaleTabs();
     renderRooms();
   });
-  [refs.layoutFilter, refs.roomAreaFilter, refs.totalPriceFilter].forEach((control) => {
-    control.addEventListener("change", renderRooms);
-  });
-  refs.saleOnlyToggle.addEventListener("click", () => {
-    state.onlyOnSale = !state.onlyOnSale;
-    refs.saleOnlyToggle.classList.toggle("is-active", state.onlyOnSale);
-    refs.saleOnlyToggle.setAttribute("aria-checked", String(state.onlyOnSale));
-    renderRooms();
-  });
 }
 
 function init() {
@@ -358,7 +315,6 @@ function init() {
       <span>${model.areaText}</span>
     `;
   }
-  populateLayoutFilter();
   renderPresaleTabs();
   renderRooms();
   bindEvents();
