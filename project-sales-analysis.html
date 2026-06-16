@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>销售情况分析 - 透明房产</title>
+  <link rel="stylesheet" href="./project-detail.css">
+</head>
+<body>
+  <div class="detail-shell">
+    <article class="detail-app sales-analysis-page">
+      <header class="detail-nav" aria-label="顶部导航">
+        <div class="detail-nav__inner">
+          <button id="backButton" class="nav-back" type="button" aria-label="返回">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M15.4 5.4 8.8 12l6.6 6.6-1.8 1.8L5.2 12l8.4-8.4 1.8 1.8Z"></path>
+            </svg>
+          </button>
+          <h1 class="detail-nav__title">销售情况分析</h1>
+          <div class="mini-capsule" aria-hidden="true">
+            <span class="mini-dot mini-dot--small"></span>
+            <span class="mini-dot"></span>
+            <span class="mini-dot mini-dot--small"></span>
+            <i></i>
+            <span class="mini-close"></span>
+          </div>
+        </div>
+      </header>
+
+      <main class="detail-content">
+        <section class="sales-analysis-hero" aria-label="销售情况分析头图">
+          <div>
+            <p>Sales Analysis</p>
+            <h2>销售情况分析</h2>
+          </div>
+        </section>
+
+        <section class="sales-analysis-panel">
+          <h3>销售进度</h3>
+          <div class="analysis-stat-grid">
+            <button id="totalButton" class="analysis-stat is-highlight" type="button">
+              <span>总套数</span>
+              <strong id="totalText">--</strong>
+            </button>
+            <div class="analysis-stat">
+              <span>已售套数</span>
+              <strong id="soldText">--</strong>
+            </div>
+            <button id="availableButton" class="analysis-stat" type="button">
+              <span>在售套数</span>
+              <strong id="availableText">--</strong>
+            </button>
+            <div class="analysis-stat">
+              <span>已售比例</span>
+              <strong id="rateText">--</strong>
+            </div>
+          </div>
+          <div class="analysis-donut-row">
+            <div id="analysisDonut" class="analysis-donut"><strong>--</strong><span>总套数</span></div>
+            <div class="analysis-legend">
+              <button id="legendAvailable" type="button"><i class="legend-blue"></i><span>在售</span><strong id="legendAvailableText">--</strong></button>
+              <div><i class="legend-green"></i><span>已售</span><strong id="legendSoldText">--</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="sales-analysis-section">
+          <div class="analysis-section-title">
+            <h3>楼栋销况</h3>
+            <div><i class="legend-blue"></i>在售 <i class="legend-green"></i>已售</div>
+          </div>
+          <div id="buildingSalesList" class="analysis-bar-list"></div>
+        </section>
+
+        <section class="sales-analysis-section">
+          <div class="analysis-section-title">
+            <h3>户型销况</h3>
+            <div><i class="legend-blue"></i>在售 <i class="legend-green"></i>已售</div>
+          </div>
+          <div id="layoutSalesList" class="analysis-bar-list"></div>
+        </section>
+
+        <section class="sales-analysis-section">
+          <h3>销售趋势</h3>
+          <div id="trendChart" class="trend-chart" aria-label="销售趋势图"></div>
+        </section>
+      </main>
+    </article>
+  </div>
+
+  <script src="./chengdu-sector-map.js"></script>
+  <script src="./project-sales-analysis.js"></script>
+</body>
+</html>

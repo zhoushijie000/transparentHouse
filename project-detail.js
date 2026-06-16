@@ -1110,7 +1110,7 @@ function renderPage(model) {
   refs.contactButton.href = phoneHref;
   refs.phonePill.href = phoneHref;
   document.querySelectorAll(".section-more").forEach((link) => {
-    link.href = `./project-one-price.html?projectId=${encodeURIComponent(state.projectId)}`;
+    link.href = `./project-sales-analysis.html?projectId=${encodeURIComponent(state.projectId)}`;
   });
   renderMedia("effect");
   renderTags(state.model.tags);

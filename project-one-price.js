@@ -11,6 +11,7 @@ const refs = {
 const state = {
   projectId: "",
   activePresaleId: "",
+  statusFilter: "",
   model: null
 };
 
@@ -92,6 +93,10 @@ function getStore() {
 
 function getProjectId() {
   return new URLSearchParams(window.location.search).get("projectId") || "home-greenland";
+}
+
+function getStatusFilter() {
+  return new URLSearchParams(window.location.search).get("status") || "";
 }
 
 function getHomeModel(projectId) {
@@ -232,6 +237,7 @@ function groupRooms(rooms) {
 }
 
 function renderPresaleTabs() {
+  refs.presaleTabs.classList.toggle("is-hidden", state.statusFilter === "available");
   refs.presaleTabs.innerHTML = state.model.presales.map((presale) => `
     <button class="presale-tab ${presale.id === state.activePresaleId ? "is-active" : ""}" data-presale-id="${presale.id}" type="button">
       <strong>${presale.no}</strong>
@@ -240,12 +246,70 @@ function renderPresaleTabs() {
   `).join("");
 }
 
+function getDisplayLayout(room) {
+  const area = Number(room.area || 0);
+  const layout = room.layout || "3房2厅2卫";
+  if (/厅|卫/.test(layout)) {
+    return layout;
+  }
+  if (area >= 150) {
+    return "2室2厅3卫";
+  }
+  if (area <= 100) {
+    return "2室2厅1卫";
+  }
+  return "3室2厅2卫";
+}
+
+function getUnitPrice(room) {
+  const area = Number(room.area || 1);
+  return Math.round((Number(room.totalPrice || 0) * 10000) / area);
+}
+
+function getRoomListTitle(room) {
+  return `${room.building}${room.unit}${room.floor}楼${String(room.roomNo).replace(/^.*?(\d+)$/, "$1")}`;
+}
+
+function renderAvailableRoomList() {
+  const rooms = state.model.presales
+    .flatMap((presale) => presale.rooms)
+    .filter((room) => room.status === "在售");
+  if (!rooms.length) {
+    refs.onePriceList.innerHTML = '<div class="empty-state">暂无可售房源</div>';
+    return;
+  }
+  refs.onePriceList.innerHTML = `
+    <div class="available-room-list" aria-label="可售房源列表">
+      ${rooms.map((room) => `
+        <article class="available-room-item">
+          <div class="available-room-main">
+            <div class="available-room-title">
+              <strong>${getRoomListTitle(room)}</strong>
+              <span>多层</span>
+            </div>
+            <p>${getDisplayLayout(room)}/建面${room.area}㎡</p>
+            <p>单价：<b>${getUnitPrice(room)}元/㎡</b></p>
+          </div>
+          <div class="available-room-side">
+            <span>可售</span>
+            <strong>${room.totalPrice}万</strong>
+          </div>
+        </article>
+      `).join("")}
+    </div>
+  `;
+}
+
 function renderRooms() {
+  if (state.statusFilter === "available") {
+    renderAvailableRoomList();
+    return;
+  }
   const presale = getActivePresale();
   const rooms = presale.rooms;
   const grouped = groupRooms(rooms);
   if (!rooms.length) {
-    refs.onePriceList.innerHTML = '<div class="empty-state">没有符合筛选条件的房源，请调整筛选项</div>';
+    refs.onePriceList.innerHTML = '<div class="empty-state">当前预售证没有符合条件的房源，请切换预售证查看</div>';
     return;
   }
   const buildingHtml = Object.entries(grouped).map(([building, units]) => {
@@ -299,6 +363,8 @@ function bindEvents() {
 
 function init() {
   state.projectId = getProjectId();
+  state.statusFilter = getStatusFilter();
+  document.querySelector(".one-price-page")?.classList.toggle("is-available-list", state.statusFilter === "available");
   const model = getModel(state.projectId);
   model.presales = buildPresales(model);
   state.model = model;
