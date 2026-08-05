@@ -114,6 +114,28 @@ const SECTOR_BLUEPRINTS = [
   { id: "wujin", name: "五津", shortName: "五津", tier: "outer", tone: "value", priceBand: [12500, 18500], inventory: 4, focus: "新津承接、低总价", audience: "刚需 / 首置", labelClass: "", points: "135,1245 205,1238 212,1308 142,1318" }
 ];
 
+const requestedMapMode = new URLSearchParams(window.location.search).get("mode");
+const MAP_MODE = ["commercial", "office"].includes(requestedMapMode) ? requestedMapMode : "residential";
+const IS_RESIDENTIAL_MODE = MAP_MODE === "residential";
+const MAP_MODE_META = {
+  residential: { label: "住宅", listHref: "./index.html?tab=residential" },
+  commercial: { label: "商业", listHref: "./index.html?tab=commercial" },
+  office: { label: "办公", listHref: "./index.html?tab=office" }
+};
+
+const BUSINESS_MAP_PROJECTS = {
+  commercial: [
+    { id: "commercial-tianfu", name: "天府国际社区商业", shortLabel: "天府国际", district: "高新区", location: "天府三街", price: "88万 - 175万", area: "38 - 76㎡", tags: ["集中式商业", "精装修", "40年产权"], position: { x: 650, y: 1125 } },
+    { id: "commercial-global", name: "环球中心商业中心", shortLabel: "环球中心", district: "高新区", location: "环球中心", price: "118万 - 255万", area: "45 - 98㎡", tags: ["专业市场", "普通装修", "40年产权"], position: { x: 680, y: 1010 } },
+    { id: "commercial-jinjiang", name: "锦江里·社区底商", shortLabel: "锦江里", district: "锦江区", location: "东大街", price: "92万 - 186万", area: "42 - 82㎡", tags: ["社区底商", "毛坯", "40年产权"], position: { x: 790, y: 925 } }
+  ],
+  office: [
+    { id: "office-finance-city", name: "金融城智汇中心", shortLabel: "金融城智汇", district: "高新区", location: "交子大道", price: "320万 - 1280万", area: "120 - 520㎡", tags: ["甲级写字楼", "精装修", "地铁沿线"], position: { x: 675, y: 1030 } },
+    { id: "office-tianfu-software", name: "天府软件园创新中心", shortLabel: "软件园创新", district: "高新区", location: "天府五街", price: "260万 - 960万", area: "96 - 380㎡", tags: ["SOHO", "普通装修", "园区配套"], position: { x: 675, y: 1170 } },
+    { id: "office-east-station", name: "东客站门户大厦", shortLabel: "东客站门户", district: "成华区", location: "成都东站", price: "198万 - 760万", area: "88 - 360㎡", tags: ["LOFT", "毛坯", "交通枢纽"], position: { x: 805, y: 900 } }
+  ]
+};
+
 const refs = {
   phoneApp: document.querySelector(".phone-app"),
   mapVisual: document.querySelector(".map-visual"),
@@ -130,7 +152,9 @@ const refs = {
   sheetSubtitle: document.getElementById("sheetSubtitle"),
   sheetMetrics: document.getElementById("sheetMetrics"),
   projectCount: document.getElementById("projectCount"),
-  projectList: document.getElementById("projectList")
+  projectList: document.getElementById("projectList"),
+  modeSwitchChip: document.getElementById("modeSwitchChip"),
+  listNavLink: document.getElementById("listNavLink")
 };
 
 const state = {
@@ -153,7 +177,7 @@ const gestureState = {
   panStartPoint: null
 };
 
-const SECTORS = SECTOR_BLUEPRINTS.map((sector, index) => {
+const RESIDENTIAL_SECTORS = SECTOR_BLUEPRINTS.map((sector, index) => {
   const points = parsePoints(sector.points);
   const center = getPolygonCentroid(points);
   const color = TIER_META[sector.tier].color;
@@ -168,6 +192,43 @@ const SECTORS = SECTOR_BLUEPRINTS.map((sector, index) => {
     projects: createProjects(sector, index)
   };
 });
+
+function createBusinessMapGroups(mode) {
+  return (BUSINESS_MAP_PROJECTS[mode] || []).map((project, index) => {
+    const { x, y } = project.position;
+    return {
+      id: `${mode}-project-${index + 1}`,
+      name: `${project.district} · ${project.location}`,
+      shortName: project.district,
+      tier: "normal",
+      tone: "mature",
+      priceBand: [0, 0],
+      inventory: 1,
+      focus: "",
+      audience: "",
+      labelClass: "",
+      points: [
+        { x: x - 24, y: y - 24 },
+        { x: x + 24, y: y - 24 },
+        { x: x + 24, y: y + 24 },
+        { x: x - 24, y: y + 24 }
+      ],
+      center: { x, y },
+      color: "transparent",
+      priceRange: project.price,
+      supply: "1个项目",
+      projects: [{
+        ...project,
+        sectorId: `${mode}-project-${index + 1}`,
+        sectorName: project.district,
+        detailUrl: `./business-project-detail.html?projectId=${encodeURIComponent(project.id)}`,
+        intro: `${project.district} · ${project.location}`
+      }]
+    };
+  });
+}
+
+const SECTORS = IS_RESIDENTIAL_MODE ? RESIDENTIAL_SECTORS : createBusinessMapGroups(MAP_MODE);
 
 function findProjectById(projectId) {
   for (const sector of SECTORS) {
@@ -184,7 +245,7 @@ function openProjectDetail(projectId) {
   if (!match) {
     return;
   }
-  window.location.href = buildProjectDetailUrl(projectId);
+  window.location.href = match.project.detailUrl || buildProjectDetailUrl(projectId);
 }
 
 window.ChengduSectorMapData = {
@@ -292,6 +353,11 @@ function getActiveProject() {
 }
 
 function renderLegend() {
+  refs.legendRail.hidden = !IS_RESIDENTIAL_MODE;
+  if (!IS_RESIDENTIAL_MODE) {
+    refs.legendRail.innerHTML = "";
+    return;
+  }
   refs.legendRail.innerHTML = LEGEND.map((item) => `
     <span class="legend-item">
       <i style="background:${item.color}"></i>${item.label}
@@ -410,30 +476,32 @@ function renderMap() {
   refs.sectorMap.setAttribute("viewBox", `${BASE_VIEWBOX.x} ${BASE_VIEWBOX.y} ${BASE_VIEWBOX.width} ${BASE_VIEWBOX.height}`);
   renderRealMapLayer();
 
-  SECTORS.forEach((sector) => {
-    const group = createSvgElement("g", {
-      class: "sector-group" + (sector.id === state.activeSectorId ? " is-active" : ""),
-      "data-sector-id": sector.id
-    });
+  if (IS_RESIDENTIAL_MODE) {
+    SECTORS.forEach((sector) => {
+      const group = createSvgElement("g", {
+        class: "sector-group" + (sector.id === state.activeSectorId ? " is-active" : ""),
+        "data-sector-id": sector.id
+      });
 
-    const polygon = createSvgElement("polygon", {
-      class: "sector-region",
-      points: pointsToString(sector.points),
-      fill: sector.color
-    });
+      const polygon = createSvgElement("polygon", {
+        class: "sector-region",
+        points: pointsToString(sector.points),
+        fill: sector.color
+      });
 
-    const text = createSvgElement("text", {
-      class: `sector-label ${sector.labelClass || ""}`.trim(),
-      x: sector.center.x,
-      y: sector.center.y + 6
-    });
-    text.textContent = sector.shortName;
+      const text = createSvgElement("text", {
+        class: `sector-label ${sector.labelClass || ""}`.trim(),
+        x: sector.center.x,
+        y: sector.center.y + 6
+      });
+      text.textContent = sector.shortName;
 
-    group.appendChild(polygon);
-    group.appendChild(text);
-    refs.sectorMap.appendChild(group);
-    sectorElements.set(sector.id, group);
-  });
+      group.appendChild(polygon);
+      group.appendChild(text);
+      refs.sectorMap.appendChild(group);
+      sectorElements.set(sector.id, group);
+    });
+  }
 
   projectMarkersLayer = createSvgElement("g", { id: "projectMarkersLayer" });
   refs.sectorMap.appendChild(projectMarkersLayer);
@@ -451,7 +519,7 @@ function onMapClick(event) {
     return;
   }
   const group = event.target.closest("[data-sector-id]");
-  if (!group) {
+  if (!IS_RESIDENTIAL_MODE || !group) {
     closeProjectMapCard();
     return;
   }
@@ -460,6 +528,10 @@ function onMapClick(event) {
 }
 
 function renderSheet() {
+  if (!IS_RESIDENTIAL_MODE) {
+    setSheetCollapsed(true);
+    return;
+  }
   const sector = getActiveSector();
   if (!sector.projects.some((project) => project.id === state.activeProjectId)) {
     state.activeProjectId = sector.projects[0]?.id || null;
@@ -601,7 +673,7 @@ function renderProjectMarkers() {
       class: [
         "project-marker",
         project.id === state.activeProjectId ? "is-active" : "",
-        isActiveSector ? "" : "is-muted"
+        IS_RESIDENTIAL_MODE && !isActiveSector ? "is-muted" : ""
       ].filter(Boolean).join(" "),
       transform: `translate(${project.position.x}, ${project.position.y})`,
       "data-project-id": project.id,
@@ -632,7 +704,7 @@ function renderProjectMarkers() {
       r: 4.5
     });
 
-    const markerLabel = project.name;
+    const markerLabel = IS_RESIDENTIAL_MODE ? project.name : (project.shortLabel || project.name);
     const markerLabelLength = Array.from(markerLabel).length;
     const chipWidth = Math.max(58, markerLabelLength * 12 + 18);
     const chip = createSvgElement("rect", {
@@ -662,7 +734,7 @@ function renderProjectMarkers() {
 }
 
 function shouldShowProjectLayer() {
-  return state.viewBox.width <= PROJECT_LAYER_VIEWBOX_WIDTH;
+  return !IS_RESIDENTIAL_MODE || state.viewBox.width <= PROJECT_LAYER_VIEWBOX_WIDTH;
 }
 
 function getProjectMarkerRecord(projectId) {
@@ -717,16 +789,18 @@ function positionProjectMapCard() {
 
 function renderProjectMapCard(record) {
   const { sector, project } = record;
+  const kicker = IS_RESIDENTIAL_MODE ? sector.name : `${project.district} · ${project.location}`;
+  const priceLabel = IS_RESIDENTIAL_MODE ? "参考均价" : "参考总价";
   refs.projectMapCard.innerHTML = `
     <button class="project-map-card__close" type="button" data-close-project-map-card aria-label="关闭项目卡片">×</button>
-    <p class="project-map-card__kicker">${sector.name}</p>
+    <p class="project-map-card__kicker">${kicker}</p>
     <h4>${project.name}</h4>
     <div class="project-map-card__meta">
       <span>${project.area}</span>
       ${project.tags.slice(0, 2).map((tag) => `<span>${tag}</span>`).join("")}
     </div>
     <div class="project-map-card__price">
-      <span>参考均价</span>
+      <span>${priceLabel}</span>
       <strong>${project.price}</strong>
     </div>
     <div class="project-map-card__actions">
@@ -1048,6 +1122,10 @@ function applyInitialSelection() {
   const projectId = params.get("project");
   state.initialFocusMode = "overview";
 
+  if (!SECTORS.some((sector) => sector.id === state.activeSectorId)) {
+    state.activeSectorId = SECTORS[0]?.id || null;
+  }
+
   if (projectId) {
     const match = findProjectById(projectId);
     if (match) {
@@ -1064,6 +1142,16 @@ function applyInitialSelection() {
   }
 
   state.activeProjectId = getActiveProject()?.id || null;
+}
+
+function applyModeUI() {
+  const modeMeta = MAP_MODE_META[MAP_MODE];
+  document.body.dataset.mapMode = MAP_MODE;
+  document.title = `透明房产 - ${modeMeta.label}地图`;
+  refs.sectorMap.setAttribute("aria-label", `${modeMeta.label}楼盘地图`);
+  refs.modeSwitchChip.href = modeMeta.listHref;
+  refs.modeSwitchChip.setAttribute("aria-label", `切换到${modeMeta.label}列表模式`);
+  refs.listNavLink.href = modeMeta.listHref;
 }
 
 function bindEvents() {
@@ -1149,6 +1237,7 @@ function bindEvents() {
 }
 
 function init() {
+  applyModeUI();
   applyInitialSelection();
   renderLegend();
   renderMap();

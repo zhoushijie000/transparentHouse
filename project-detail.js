@@ -59,6 +59,7 @@ const refs = {
 };
 
 const FOLLOWED_PROJECTS_KEY = "transparentHouse:followedProjects";
+const BROWSING_HISTORY_KEY = "transparentHouse:browsingHistory";
 
 const state = {
   followed: false,
@@ -1081,6 +1082,16 @@ function getFollowedProjects() {
   }
 }
 
+function recordBrowsingHistory(projectId) {
+  try {
+    const stored = JSON.parse(localStorage.getItem(BROWSING_HISTORY_KEY) || "[]");
+    const history = Array.isArray(stored) ? stored.filter((id) => id !== projectId) : [];
+    localStorage.setItem(BROWSING_HISTORY_KEY, JSON.stringify([projectId, ...history].slice(0, 20)));
+  } catch (_error) {
+    localStorage.setItem(BROWSING_HISTORY_KEY, JSON.stringify([projectId]));
+  }
+}
+
 function setFollowed(nextValue) {
   state.followed = nextValue;
   const followed = getFollowedProjects();
@@ -1294,6 +1305,7 @@ function initPage() {
   }
   state.projectId = projectId;
   state.followed = getFollowedProjects().has(projectId);
+  recordBrowsingHistory(projectId);
   renderPage(buildModel(record));
   bindEvents();
   updateDetailTabsVisibility();

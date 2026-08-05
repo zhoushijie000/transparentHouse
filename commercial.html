@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>透明房产 - 商业公寓</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body{margin:0;background:linear-gradient(180deg,#f3f7fb,#eef3f8);font-family:Inter,"Microsoft YaHei",sans-serif;color:#1f2937}
+    .app{max-width:430px;min-height:100dvh;margin:auto;background:#f8f9fa;position:relative;overflow:hidden}
+    .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:80px;padding-bottom:env(safe-area-inset-bottom);display:grid;grid-template-columns:repeat(3,1fr);align-items:center;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);box-shadow:0 -4px 24px rgba(25,28,29,.08);z-index:10}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:5px;color:#94a3b8;font-size:11px;font-weight:600}.nav-item svg{width:21px;height:21px}.nav-item.active{color:#00325b}
+    .card{background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(15,23,42,.07);overflow:hidden}.map-button{background:#00325b;color:#fff;border-radius:999px;padding:12px 18px;font-size:13px;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="sticky top-0 z-10 bg-white/85 px-4 pb-4 pt-4 backdrop-blur-xl">
+      <div class="flex items-center justify-between"><div><p class="text-xs font-semibold uppercase tracking-[.18em] text-slate-400">透明房产</p><h1 class="mt-1 text-[22px] font-extrabold text-[#00325b]">商业公寓</h1></div><a class="map-button" href="./chengdu-sector-map.html?mode=commercial">地图模式</a></div>
+      <label class="mt-4 flex h-11 items-center gap-2 rounded-xl bg-slate-50 px-3 text-slate-400"><span>⌕</span><input id="search" class="w-full border-0 bg-transparent text-sm outline-none" placeholder="搜索公寓项目或区域"></label>
+    </header>
+    <main class="px-4 pb-28 pt-4">
+      <div class="mb-4 flex items-end justify-between"><div><h2 class="text-lg font-extrabold text-slate-800">在售公寓项目</h2><p id="summary" class="mt-1 text-xs text-slate-400"></p></div><span class="rounded-full bg-[#eaf2ff] px-3 py-1 text-xs font-semibold text-[#2f76f6]">商业</span></div>
+      <section id="list" class="space-y-4"></section>
+    </main>
+    <nav class="bottom-nav" aria-label="主菜单">
+      <a class="nav-item active" href="./index.html?tab=commercial" aria-current="page"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5 4 11v8.5h5.5v-5.5h5v5.5H20V11l-8-6.5Z"/></svg><span>楼盘</span></a>
+      <a class="nav-item" href="./data.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 9h3v10H5V9Zm5-4h4v14h-4V5Zm6 7h3v7h-3v-7Z"/></svg><span>数据</span></a>
+      <a class="nav-item" href="./my.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-3.33 0-6 1.79-6 4v1h12v-1c0-2.21-2.67-4-6-4Z"/></svg><span>我的</span></a>
+    </nav>
+  </div>
+  <script>
+    const apartments=[
+      {name:"天府国际社区公寓",area:"高新区 · 天府三街",price:"2.2万/㎡起",size:"38-76㎡",tags:["可办公","地铁沿线","精装交付"],stock:"在售 126 套",image:"https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=900&q=80"},
+      {name:"环球中心臻选公寓",area:"高新区 · 环球中心",price:"2.6万/㎡起",size:"45-98㎡",tags:["酒店式管理","成熟配套","即买即用"],stock:"在售 84 套",image:"https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=900&q=80"},
+      {name:"锦江里·城市公寓",area:"锦江区 · 东大街",price:"2.1万/㎡起",size:"42-82㎡",tags:["核心商圈","低总价","灵活空间"],stock:"在售 67 套",image:"https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80"},
+      {name:"空港智谷公寓",area:"双流区 · 临空经济区",price:"1.35万/㎡起",size:"36-68㎡",tags:["产业配套","可注册","租赁友好"],stock:"在售 219 套",image:"https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=900&q=80"}
+    ];
+    const list=document.querySelector('#list'),search=document.querySelector('#search'),summary=document.querySelector('#summary');
+    function render(){const q=search.value.trim().toLowerCase();const rows=apartments.filter(x=>(x.name+x.area+x.tags.join('')).toLowerCase().includes(q));summary.textContent=`共 ${rows.length} 个公寓项目`;list.innerHTML=rows.map(x=>`<article class="card"><img src="${x.image}" alt="${x.name}" class="h-40 w-full object-cover"><div class="p-4"><div class="flex items-start justify-between gap-3"><div><h3 class="text-[18px] font-extrabold text-[#00325b]">${x.name}</h3><p class="mt-1 text-xs text-slate-500">${x.area}</p></div><span class="rounded bg-orange-50 px-2 py-1 text-[10px] font-bold text-orange-600">${x.stock}</span></div><p class="mt-3 text-lg font-extrabold text-[#00325b]">${x.price}</p><div class="mt-3 flex flex-wrap gap-2">${x.tags.map(t=>`<span class="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600">${t}</span>`).join('')}</div><div class="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-400">建面 ${x.size}<span class="float-right text-[#2f76f6]">查看项目详情 ›</span></div></div></article>`).join('')||'<div class="rounded-2xl bg-white px-4 py-12 text-center text-sm text-slate-400">未找到匹配的公寓项目</div>'}
+    search.addEventListener('input',render);render();
+  </script>
+</body>
+</html>

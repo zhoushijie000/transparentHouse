@@ -33,7 +33,7 @@ button,input{font:inherit}
   width:100%;
   max-width:430px;
   min-height:100dvh;
-  overflow:hidden;
+  overflow-x:hidden;
   background:var(--page);
 }
 .topbar{
@@ -165,14 +165,165 @@ button,input{font:inherit}
 .blank-space{
   min-height:calc(100dvh - 58px - 150px - 70px - 86px);
 }
-.bottom-nav{
+.collection-wrap{
+  display:grid;
+  gap:24px;
+  padding:24px 18px 110px;
+}
+.collection-section{
+  scroll-margin-top:16px;
+}
+.collection-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.collection-head h2{
+  margin:0;
+  color:var(--brand-dark);
+  font-size:19px;
+  font-weight:800;
+}
+.collection-head p{
+  margin:4px 0 0;
+  color:#8b95a3;
+  font-size:12px;
+}
+.collection-clear{
+  border:0;
+  padding:5px 0;
+  color:#7d8795;
+  background:transparent;
+  font-size:12px;
+  cursor:pointer;
+}
+.collection-list{
+  display:grid;
+  gap:14px;
+}
+.estate-card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(0,50,91,.08);
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 5px 16px rgba(22,42,68,.06);
+}
+.estate-card__link{
+  display:block;
+}
+.estate-card__image{
+  display:block;
+  width:100%;
+  height:164px;
+  object-fit:cover;
+  background:#e9eef4;
+}
+.estate-card__body{
+  padding:14px 14px 16px;
+}
+.estate-card__category{
+  display:inline-flex;
+  min-height:23px;
+  align-items:center;
+  border-radius:999px;
+  padding:0 9px;
+  color:#245fbf;
+  background:#eaf2ff;
+  font-size:11px;
+  font-weight:700;
+}
+.estate-card h3{
+  margin:9px 72px 0 0;
+  color:var(--brand-dark);
+  font-size:21px;
+  line-height:1.25;
+}
+.estate-card__location{
+  margin:6px 0 0;
+  color:#758091;
+  font-size:12px;
+}
+.estate-card__price{
+  display:block;
+  margin-top:10px;
+  color:#e33d45;
+  font-size:19px;
+  font-weight:800;
+}
+.estate-card__tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:10px;
+}
+.estate-card__tags span{
+  border-radius:999px;
+  padding:4px 9px;
+  color:#516173;
+  background:#f0f3f6;
+  font-size:11px;
+  font-weight:650;
+}
+.estate-card__meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:13px;
+  padding-top:13px;
+  border-top:1px solid #eef1f4;
+}
+.estate-card__meta span{
+  display:block;
+  color:#99a1ad;
+  font-size:10px;
+}
+.estate-card__meta strong{
+  display:block;
+  margin-top:3px;
+  color:#313841;
+  font-size:13px;
+}
+.estate-card__action{
   position:absolute;
-  left:0;
-  right:0;
+  right:14px;
+  top:181px;
+  z-index:2;
+  min-height:30px;
+  border:1px solid #dce5ef;
+  border-radius:999px;
+  padding:0 11px;
+  color:#657285;
+  background:rgba(255,255,255,.96);
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+.collection-empty{
+  min-height:126px;
+  display:grid;
+  place-items:center;
+  border:1px dashed #cfd8e4;
+  border-radius:12px;
+  padding:22px;
+  color:#8b95a3;
+  background:rgba(255,255,255,.62);
+  font-size:13px;
+  text-align:center;
+}
+.bottom-nav{
+  position:fixed;
+  left:50%;
+  right:auto;
+  width:100%;
+  max-width:430px;
+  transform:translateX(-50%);
   bottom:0;
   min-height:86px;
   display:grid;
-  grid-template-columns:1fr 1fr 1fr;
+  grid-template-columns:repeat(3,1fr);
   align-items:start;
   padding:10px 0 calc(18px + env(safe-area-inset-bottom));
   border-radius:8px 8px 0 0;
@@ -253,13 +404,13 @@ button,input{font:inherit}
     </section>
 
     <section class="quick-row" aria-label="我的功能">
-      <a class="quick-card" href="#follow">
+      <a class="quick-card" href="./my-follow.html">
         <span class="quick-icon follow" aria-hidden="true">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 4.5 5.8v5.7c0 4.7 3.2 7.9 7.5 9.5 4.3-1.6 7.5-4.8 7.5-9.5V5.8L12 3Zm3.7 7.3-4.4 4.5-2.5-2.5 1.3-1.3 1.2 1.2 3.1-3.2 1.3 1.3Z"/></svg>
         </span>
         <span>我的关注</span>
       </a>
-      <a class="quick-card" href="#history">
+      <a class="quick-card" href="./my-history.html">
         <span class="quick-icon footprint" aria-hidden="true">
           <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor"><path d="M7.7 10.6c1.4 0 2.6-1.3 2.6-3S9.1 4.7 7.7 4.7 5.1 6 5.1 7.6s1.2 3 2.6 3Zm8.7 0c1.4 0 2.5-1.3 2.5-3s-1.1-2.9-2.5-2.9-2.6 1.3-2.6 2.9 1.2 3 2.6 3ZM12 13c-3 0-5.7 2.4-5.7 5.1 0 1.5 1.3 2.2 2.5 1.6.9-.4 1.9-.7 3.2-.7s2.3.3 3.2.7c1.2.6 2.5-.1 2.5-1.6 0-2.7-2.7-5.1-5.7-5.1Z"/></svg>
         </span>
@@ -273,7 +424,7 @@ button,input{font:inherit}
   <nav class="bottom-nav" aria-label="主菜单">
     <a class="bottom-item" href="./index.html">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="m4 11 8-6 8 6v9h-5v-6H9v6H4v-9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-      <span>首页</span>
+      <span>楼盘</span>
     </a>
     <a class="bottom-item" href="./data.html">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M5 9h3v10H5V9Zm5-4h4v14h-4V5Zm6 7h3v7h-3v-7Z"/></svg>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>我的足迹 - 透明房产</title>
+  <link rel="stylesheet" href="./my-collection.css">
+</head>
+<body data-collection-mode="history">
+  <div class="collection-shell">
+    <article class="collection-app">
+      <header class="collection-nav">
+        <a class="collection-nav__back" href="./my.html" aria-label="返回我的">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="m15 5-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <h1>我的足迹</h1>
+        <span></span>
+      </header>
+      <main class="collection-main">
+        <div class="collection-head">
+          <p id="collectionSummary">最近浏览 0 个楼盘</p>
+          <button id="clearCollectionButton" class="collection-clear" type="button">清空足迹</button>
+        </div>
+        <div id="categoryTabs" class="category-tabs" role="tablist" aria-label="足迹业态切换"></div>
+        <div id="collectionList" class="collection-list"></div>
+      </main>
+    </article>
+  </div>
+  <script src="./my-collection.js"></script>
+</body>
+</html>

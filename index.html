@@ -3,7 +3,7 @@
 <html class="light" lang="zh-CN"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>透明房产 - 在售楼盘</title>
+<title>透明房产 - 楼盘</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Plus_Jakarta_Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -211,10 +211,13 @@
 <main class="pt-40 pb-40 px-4 mx-auto max-w-[430px]">
 <!-- Section Header -->
 <div class="mb-5 px-1">
-<div>
-<h1 class="text-[22px] font-extrabold font-headline text-primary tracking-tight">在售楼盘</h1>
-<p id="filterSummary" class="mt-1 text-xs font-medium text-secondary">共 6 个在售楼盘</p>
+<h1 class="sr-only">楼盘列表</h1>
+<div class="flex items-end gap-6 overflow-x-auto hide-scrollbar" role="tablist" aria-label="楼盘业态">
+<button class="property-type-tab whitespace-nowrap border-b-2 border-primary pb-2 text-[17px] font-extrabold font-headline text-primary" data-property-type="residential" role="tab" aria-selected="true" type="button">住宅</button>
+<button class="property-type-tab whitespace-nowrap border-b-2 border-transparent pb-2 text-[17px] font-bold font-headline text-secondary" data-property-type="commercial" role="tab" aria-selected="false" type="button">商业</button>
+<button class="property-type-tab whitespace-nowrap border-b-2 border-transparent pb-2 text-[17px] font-bold font-headline text-secondary" data-property-type="office" role="tab" aria-selected="false" type="button">办公</button>
 </div>
+<p id="filterSummary" class="mt-2 text-xs font-medium text-secondary">共 6 个在售楼盘</p>
 </div>
 <!-- Property Cards List -->
 <div class="space-y-5" id="propertyList"></div>
@@ -246,14 +249,14 @@
 <option value="">全部板块</option>
 </select>
 </label>
-<label class="block rounded-2xl bg-surface-container-lowest px-3 py-3 ring-1 ring-outline-variant/15">
-<span class="mb-2 block text-[10px] font-label font-bold uppercase tracking-[0.18em] text-outline">户型</span>
+<label id="typeFilterField" class="block rounded-2xl bg-surface-container-lowest px-3 py-3 ring-1 ring-outline-variant/15">
+<span id="typeFilterLabel" class="mb-2 block text-[10px] font-label font-bold uppercase tracking-[0.18em] text-outline">户型</span>
 <select id="roomFilter" class="w-full border-none bg-transparent p-0 text-sm font-semibold text-primary focus:ring-0">
 <option value="">全部户型</option>
 </select>
 </label>
 <label class="block rounded-2xl bg-surface-container-lowest px-3 py-3 ring-1 ring-outline-variant/15">
-<span class="mb-2 block text-[10px] font-label font-bold uppercase tracking-[0.18em] text-outline">面积段</span>
+<span id="areaFilterLabel" class="mb-2 block text-[10px] font-label font-bold uppercase tracking-[0.18em] text-outline">面积段</span>
 <select id="areaFilter" class="w-full border-none bg-transparent p-0 text-sm font-semibold text-primary focus:ring-0">
 <option value="">全部面积</option>
 <option value="0-90">90㎡以下</option>
@@ -263,7 +266,7 @@
 </select>
 </label>
 <label class="block rounded-2xl bg-surface-container-lowest px-3 py-3 ring-1 ring-outline-variant/15">
-<span class="mb-2 block text-[10px] font-label font-bold uppercase tracking-[0.18em] text-outline">总价</span>
+<span id="priceFilterLabel" class="mb-2 block text-[10px] font-label font-bold uppercase tracking-[0.18em] text-outline">总价</span>
 <select id="priceFilter" class="w-full border-none bg-transparent p-0 text-sm font-semibold text-primary focus:ring-0">
 <option value="">全部总价</option>
 <option value="0-150">150万以内</option>
@@ -281,10 +284,10 @@
 </section>
 </div>
 <!-- Map/List Toggle FAB -->
-<div class="fixed floating-shell fab-offset z-50 flex justify-center">
-<a class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-full shadow-2xl active:scale-95 transition-transform font-label font-bold" href="./chengdu-sector-map.html">
+<div id="mapFab" class="fixed floating-shell fab-offset z-50 flex justify-center">
+<a id="mapLink" class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-full shadow-2xl active:scale-95 transition-transform font-label font-bold" href="./chengdu-sector-map.html?mode=residential">
 <svg aria-hidden="true" class="h-5 w-5 flex-none" fill="currentColor" viewBox="0 0 24 24"><path d="m15 18.5 4-1.39V6.5l-4 1.4v10.6Zm-6 1.6 4-1.6V7.9l-4 1.6v10.6Zm-5-3 3 1.05V7.55L4 6.5v10.6ZM3.3 4.8 8.7 6.6 15 4l5.7 1.9c.18.06.3.22.3.41v11.2c0 .18-.12.34-.3.4L15 20 9 22 3.3 20.1A.43.43 0 0 1 3 19.7V5.2c0-.3.3-.5.6-.4Z"/></svg>
-<span>地图模式</span>
+<span id="mapLabel">住宅地图</span>
 </a>
 </div>
 <!-- BottomNavBar -->
@@ -292,7 +295,7 @@
 <!-- Viewing (Active) -->
 <a id="homeNavButton" class="flex flex-col items-center justify-center text-primary font-bold opacity-100 transition-all" href="./index.html" aria-current="page">
 <svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 21V3h12v4h6v14H3Zm4-3h2v-2H7v2Zm0-4h2v-2H7v2Zm0-4h2V8H7v2Zm4 8h2v-2h-2v2Zm0-4h2v-2h-2v2Zm0-4h2V8h-2v2Zm4 8h2v-2h-2v2Zm0-4h2v-2h-2v2Z"/></svg>
-<span class="text-[11px] font-label font-semibold mt-1">首页</span>
+<span class="text-[11px] font-label font-semibold mt-1">楼盘</span>
 </a>
 <!-- Data -->
 <a id="dataNavButton" class="flex flex-col items-center justify-center text-slate-400 hover:text-primary transition-colors" href="./data.html">
@@ -458,12 +461,12 @@ const properties = [
 const PROJECT_DETAIL_PATH = "./project-detail.html";
 const FOLLOWED_PROJECTS_KEY = "transparentHouse:followedProjects";
 const propertyFilterMeta = [
-  { projectId: "home-greenland", region: "天府新区", roomTypes: [3, 4] },
-  { projectId: "home-jinjiang", region: "锦江区", roomTypes: [4, 5] },
-  { projectId: "home-tianyue", region: "武侯区", roomTypes: [3, 4] },
-  { projectId: "home-luhu", region: "天府新区", roomTypes: [4] },
-  { projectId: "home-guanghe", region: "龙泉驿区", roomTypes: [3] },
-  { projectId: "home-qingyun", region: "青羊区", roomTypes: [3, 4] }
+  { projectId: "home-greenland", category: "residential", region: "天府新区", roomTypes: [3, 4] },
+  { projectId: "home-jinjiang", category: "residential", region: "锦江区", roomTypes: [4, 5] },
+  { projectId: "home-tianyue", category: "residential", region: "武侯区", roomTypes: [3, 4] },
+  { projectId: "home-luhu", category: "residential", region: "天府新区", roomTypes: [4] },
+  { projectId: "home-guanghe", category: "residential", region: "龙泉驿区", roomTypes: [3] },
+  { projectId: "home-qingyun", category: "residential", region: "青羊区", roomTypes: [3, 4] }
 ];
 
 properties.forEach((property, index) => {
@@ -473,6 +476,110 @@ properties.forEach((property, index) => {
   }
 });
 
+properties.push(
+  {
+    projectId: "commercial-tianfu", category: "commercial", detailUrl: "./business-project-detail.html?projectId=commercial-tianfu", name: "天府国际社区商业",
+    badge: "热销商业", badgeTone: "tertiary", location: "高新区 · 天府三街", region: "高新区", sector: "大源中央",
+    priceMin: 88, priceMax: 175, tags: ["集中式商业", "精装修"], features: ["近地铁", "成熟配套"],
+    sizeRange: "38 - 76 m²", elevatorRatio: "6梯24户", unitMeta: "1房1厅1卫 · 45m²", roomTypes: [1, 2],
+    propertyYears: "40年", buildingType: "集中式商业", decoration: "精装修", commercialArea: "38 - 76 m²",
+    openingDate: "2025年09月", deliveryDate: "2027年06月", totalUnits: "320户", unitRange: "38 - 76 m²",
+    standardFloorArea: "约1,800 m²", marketingAgent: "世联行", propertyCompany: "成都天府物业", propertyFee: "6.8元/m²/月",
+    images: ["https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80", "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80"]
+  },
+  {
+    projectId: "commercial-global", category: "commercial", detailUrl: "./business-project-detail.html?projectId=commercial-global", name: "环球中心商业中心",
+    badge: "在售项目", badgeTone: "primary", location: "高新区 · 环球中心", region: "高新区", sector: "金融城",
+    priceMin: 118, priceMax: 255, tags: ["专业市场", "普通装修"], features: ["成熟配套", "近地铁", "灵活空间"],
+    sizeRange: "45 - 98 m²", elevatorRatio: "8梯32户", unitMeta: "1房1厅1卫 · 52m²", roomTypes: [1, 2],
+    propertyYears: "40年", buildingType: "专业市场", decoration: "普通装修", commercialArea: "45 - 98 m²",
+    openingDate: "2025年12月", deliveryDate: "2027年12月", totalUnits: "246户", unitRange: "45 - 98 m²",
+    standardFloorArea: "约2,400 m²", marketingAgent: "中原地产", propertyCompany: "环球中心物业", propertyFee: "7.5元/m²/月",
+    images: ["https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80", "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80"]
+  },
+  {
+    projectId: "commercial-jinjiang", category: "commercial", detailUrl: "./business-project-detail.html?projectId=commercial-jinjiang", name: "锦江里·社区底商",
+    badge: "核心商圈", badgeTone: "tertiary", location: "锦江区 · 东大街", region: "锦江区", sector: "春熙路",
+    priceMin: 92, priceMax: 186, tags: ["社区底商", "毛坯"], features: ["核心商圈", "近地铁", "灵活空间"],
+    sizeRange: "42 - 82 m²", elevatorRatio: "6梯28户", unitMeta: "1房1厅1卫 · 48m²", roomTypes: [1, 2],
+    propertyYears: "40年", buildingType: "社区底商", decoration: "毛坯", commercialArea: "42 - 82 m²",
+    openingDate: "2026年03月", deliveryDate: "2027年09月", totalUnits: "168户", unitRange: "42 - 82 m²",
+    standardFloorArea: "约1,200 m²", marketingAgent: "锐理数据", propertyCompany: "锦江城市物业", propertyFee: "5.8元/m²/月",
+    images: ["https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80", "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"]
+  },
+  {
+    projectId: "office-finance-city", category: "office", detailUrl: "./business-project-detail.html?projectId=office-finance-city", name: "金融城智汇中心",
+    badge: "甲级办公", badgeTone: "primary", location: "高新区 · 交子大道", region: "高新区", sector: "金融城",
+    priceMin: 320, priceMax: 1280, tags: ["OFFICE", "精装修"], features: ["轨道直达", "商务配套", "总部办公"],
+    sizeRange: "120 - 520 m²", elevatorRatio: "12梯16户", unitMeta: "开放办公 · 180m²", roomTypes: [],
+    propertyYears: "40年", propertyLevel: "OFFICE", floorHeight: "4.2m", decoration: "精装修", officeArea: "120 - 520 m²",
+    openingDate: "2025年10月", deliveryDate: "2027年06月", totalUnits: "180户", unitRange: "120 - 520 m²",
+    passengerElevators: "12个", freightElevators: "2个", marketingAgent: "世邦魏理仕", propertyCompany: "金融城物业", propertyFee: "18元/m²/月",
+    images: ["https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80", "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"]
+  },
+  {
+    projectId: "office-tianfu-software", category: "office", detailUrl: "./business-project-detail.html?projectId=office-tianfu-software", name: "天府软件园创新中心",
+    badge: "产业办公", badgeTone: "tertiary", location: "高新区 · 天府五街", region: "高新区", sector: "大源中央",
+    priceMin: 260, priceMax: 960, tags: ["SOHO", "普通装修"], features: ["地铁沿线", "园区配套", "企业服务"],
+    sizeRange: "96 - 380 m²", elevatorRatio: "10梯14户", unitMeta: "开放办公 · 128m²", roomTypes: [],
+    propertyYears: "40年", propertyLevel: "SOHO", floorHeight: "3.9m", decoration: "普通装修", officeArea: "96 - 380 m²",
+    openingDate: "2026年01月", deliveryDate: "2027年12月", totalUnits: "236户", unitRange: "96 - 380 m²",
+    passengerElevators: "10个", freightElevators: "2个", marketingAgent: "戴德梁行", propertyCompany: "天府软件园物业", propertyFee: "15元/m²/月",
+    images: ["https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80", "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80"]
+  },
+  {
+    projectId: "office-east-station", category: "office", detailUrl: "./business-project-detail.html?projectId=office-east-station", name: "东客站门户大厦",
+    badge: "现房办公", badgeTone: "primary", location: "成华区 · 成都东站", region: "成华区", sector: "东客站",
+    priceMin: 198, priceMax: 760, tags: ["LOFT", "毛坯"], features: ["交通枢纽", "商务配套", "现房"],
+    sizeRange: "88 - 360 m²", elevatorRatio: "8梯12户", unitMeta: "开放办公 · 108m²", roomTypes: [],
+    propertyYears: "40年", propertyLevel: "LOFT", floorHeight: "4.8m", decoration: "毛坯", officeArea: "88 - 360 m²",
+    openingDate: "2024年08月", deliveryDate: "现房", totalUnits: "156户", unitRange: "88 - 360 m²",
+    passengerElevators: "8个", freightElevators: "2个", marketingAgent: "合富辉煌", propertyCompany: "东站枢纽物业", propertyFee: "12元/m²/月",
+    images: ["https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80", "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80"]
+  }
+);
+
+const propertyTypeConfig = {
+  residential: {
+    label: "住宅",
+    mapLabel: "住宅地图",
+    mapHref: "./chengdu-sector-map.html?mode=residential",
+    facetLabel: "户型",
+    facetPlaceholder: "全部户型",
+    facetVisible: true,
+    areaLabel: "住宅面积",
+    priceLabel: "住宅总价",
+    areaOptions: [["0-90", "90㎡以下"], ["90-120", "90-120㎡"], ["120-144", "120-144㎡"], ["144+", "144㎡以上"]],
+    priceOptions: [["0-150", "150万以内"], ["150-250", "150万-250万"], ["250-400", "250万-400万"], ["400-600", "400万-600万"], ["600+", "600万及以上"]]
+  },
+  commercial: {
+    label: "商业（公寓）",
+    mapLabel: "商业地图",
+    mapHref: "./chengdu-sector-map.html?mode=commercial",
+    facetLabel: "产品类型",
+    facetPlaceholder: "全部产品类型",
+    facetVisible: false,
+    areaLabel: "面积",
+    priceLabel: "总价",
+    areaOptions: [["0-40", "40㎡以下"], ["40-60", "40-60㎡"], ["60-80", "60-80㎡"], ["80+", "80㎡以上"]],
+    priceOptions: [["0-30", "30万以内"], ["30-60", "30万-60万"], ["60-100", "60万-100万"], ["100+", "100万以上"]]
+  },
+  office: {
+    label: "办公",
+    mapLabel: "办公地图",
+    mapHref: "./chengdu-sector-map.html?mode=office",
+    facetLabel: "办公类型",
+    facetPlaceholder: "全部办公类型",
+    facetVisible: true,
+    areaLabel: "办公面积",
+    priceLabel: "办公总价",
+    areaOptions: [["0-100", "100㎡以下"], ["100-150", "100-150㎡"], ["150-300", "150-300㎡"], ["300-500", "300-500㎡"], ["500+", "500㎡以上"]],
+    priceOptions: [["0-300", "300万以内"], ["300-500", "300万-500万"], ["500-800", "500万-800万"], ["800-1000", "800万-1000万"], ["1000+", "1000万及以上"]]
+  }
+};
+const requestedPropertyType = new URLSearchParams(window.location.search).get("tab");
+let activePropertyType = propertyTypeConfig[requestedPropertyType] ? requestedPropertyType : "residential";
+
 const searchInput = document.querySelector("#searchInput");
 const openFilterButton = document.querySelector("#openFilterButton");
 const filterModal = document.querySelector("#filterModal");
@@ -481,13 +588,21 @@ const closeFilterButton = document.querySelector("#closeFilterButton");
 const regionFilter = document.querySelector("#regionFilter");
 const sectorFilter = document.querySelector("#sectorFilter");
 const roomFilter = document.querySelector("#roomFilter");
+const typeFilterField = document.querySelector("#typeFilterField");
+const typeFilterLabel = document.querySelector("#typeFilterLabel");
 const areaFilter = document.querySelector("#areaFilter");
+const areaFilterLabel = document.querySelector("#areaFilterLabel");
 const priceFilter = document.querySelector("#priceFilter");
+const priceFilterLabel = document.querySelector("#priceFilterLabel");
 const resetFiltersButton = document.querySelector("#resetFiltersButton");
 const applyFilterButton = document.querySelector("#applyFilterButton");
 const filterSummary = document.querySelector("#filterSummary");
 const propertyList = document.querySelector("#propertyList");
 const emptyState = document.querySelector("#emptyState");
+const propertyTypeTabs = [...document.querySelectorAll(".property-type-tab")];
+const mapFab = document.querySelector("#mapFab");
+const mapLink = document.querySelector("#mapLink");
+const mapLabel = document.querySelector("#mapLabel");
 const filterControls = [searchInput, regionFilter, sectorFilter, roomFilter, areaFilter, priceFilter];
 
 function setFilterModalVisibility(visible) {
@@ -524,8 +639,8 @@ function getSelectedAreaRange(value) {
     return null;
   }
 
-  if (value === "144+") {
-    return { min: 144, max: Number.POSITIVE_INFINITY };
+  if (value.endsWith("+")) {
+    return { min: Number(value.replace("+", "")), max: Number.POSITIVE_INFINITY };
   }
 
   const [min, max] = value.split("-").map(Number);
@@ -553,10 +668,18 @@ function getPropertyRooms(property) {
   return rooms.length ? rooms : [];
 }
 
+function getActiveProperties() {
+  return properties.filter((property) => property.category === activePropertyType);
+}
+
 function populateFilterOptions() {
-  const regions = [...new Set(properties.map((property) => property.region))];
-  const sectors = [...new Set(properties.map((property) => property.sector))];
-  const rooms = [...new Set(properties.flatMap(getPropertyRooms))].sort((left, right) => left - right);
+  const activeProperties = getActiveProperties();
+  const config = propertyTypeConfig[activePropertyType];
+  const regions = [...new Set(activeProperties.map((property) => property.region))];
+  const sectors = [...new Set(activeProperties.map((property) => property.sector))];
+  const facets = activePropertyType === "residential"
+    ? [...new Set(activeProperties.flatMap(getPropertyRooms))].sort((left, right) => left - right)
+    : [...new Set(activeProperties.map((property) => activePropertyType === "commercial" ? property.buildingType : property.propertyLevel).filter(Boolean))];
 
   regionFilter.innerHTML = [
     '<option value="">全部区域</option>',
@@ -569,8 +692,18 @@ function populateFilterOptions() {
   ].join("");
 
   roomFilter.innerHTML = [
-    '<option value="">全部户型</option>',
-    ...rooms.map((room) => `<option value="${room}">${room}室</option>`)
+    `<option value="">${config.facetPlaceholder}</option>`,
+    ...facets.map((facet) => `<option value="${facet}">${activePropertyType === "residential" ? `${facet}室` : facet}</option>`)
+  ].join("");
+
+  areaFilter.innerHTML = [
+    `<option value="">全部${config.areaLabel}</option>`,
+    ...config.areaOptions.map(([value, label]) => `<option value="${value}">${label}</option>`)
+  ].join("");
+
+  priceFilter.innerHTML = [
+    `<option value="">全部${config.priceLabel}</option>`,
+    ...config.priceOptions.map(([value, label]) => `<option value="${value}">${label}</option>`)
   ].join("");
 }
 
@@ -581,8 +714,53 @@ function getBadgeClasses(tone) {
 }
 
 function getProjectDetailUrl(property) {
+  if (Object.prototype.hasOwnProperty.call(property, "detailUrl")) {
+    return property.detailUrl;
+  }
   const projectId = property.projectId || "home-greenland";
   return `${PROJECT_DETAIL_PATH}?projectId=${encodeURIComponent(projectId)}`;
+}
+
+function syncPropertyTypeUI() {
+  const config = propertyTypeConfig[activePropertyType];
+  document.title = `透明房产 - ${config.label}楼盘`;
+  typeFilterField.classList.toggle("hidden", !config.facetVisible);
+  typeFilterLabel.textContent = config.facetLabel;
+  areaFilterLabel.textContent = config.areaLabel;
+  priceFilterLabel.textContent = config.priceLabel;
+  propertyTypeTabs.forEach((button) => {
+    const isActive = button.dataset.propertyType === activePropertyType;
+    button.setAttribute("aria-selected", String(isActive));
+    button.classList.toggle("border-primary", isActive);
+    button.classList.toggle("text-primary", isActive);
+    button.classList.toggle("font-extrabold", isActive);
+    button.classList.toggle("border-transparent", !isActive);
+    button.classList.toggle("text-secondary", !isActive);
+    button.classList.toggle("font-bold", !isActive);
+  });
+  mapFab.style.display = config.mapHref ? "" : "none";
+  if (config.mapHref) {
+    mapLink.href = config.mapHref;
+    mapLabel.textContent = config.mapLabel;
+  }
+}
+
+function setActivePropertyType(type) {
+  if (!propertyTypeConfig[type]) {
+    return;
+  }
+  activePropertyType = type;
+  regionFilter.value = "";
+  sectorFilter.value = "";
+  roomFilter.value = "";
+  areaFilter.value = "";
+  priceFilter.value = "";
+  populateFilterOptions();
+  syncPropertyTypeUI();
+  applyFilters();
+  const url = new URL(window.location.href);
+  url.searchParams.set("tab", type);
+  window.history.replaceState({}, "", url);
 }
 
 function getFollowedProjects() {
@@ -605,10 +783,47 @@ function toggleFollowedProject(projectId) {
   return followed.has(projectId);
 }
 
+function getPropertyPrimaryInfo(property) {
+  if (property.category === "commercial") {
+    return [
+      ["产权年限", property.propertyYears],
+      ["商业建筑面积", property.commercialArea],
+      ["标准层面积", property.standardFloorArea],
+      ["物业费", property.propertyFee]
+    ];
+  }
+
+  if (property.category === "office") {
+    return [
+      ["产权年限", property.propertyYears],
+      ["办公建筑面积", property.officeArea],
+      ["层高", property.floorHeight],
+      ["物业费", property.propertyFee]
+    ];
+  }
+
+  return [
+    ["面积区间", property.sizeRange],
+    ["所属区域", property.region],
+    ["所属板块", property.sector],
+    ["梯户比", property.elevatorRatio]
+  ];
+}
+
+function renderPropertyInfoItems(items) {
+  return items.map(([label, value]) => `
+<div class="min-w-0 space-y-0.5">
+<p class="text-[9px] font-label font-bold text-outline uppercase tracking-wider">${label}</p>
+<p class="break-words text-xs font-semibold font-body text-on-surface">${value || "—"}</p>
+</div>`.trim()).join("");
+}
+
 function renderProperties(list) {
   const followedProjects = getFollowedProjects();
   propertyList.innerHTML = list.map((property) => {
     const isFollowed = followedProjects.has(property.projectId);
+    const detailUrl = getProjectDetailUrl(property);
+    const primaryInfo = renderPropertyInfoItems(getPropertyPrimaryInfo(property));
     const imageSlides = property.images.map((image, index) => `
 <div class="flex-none ${index === 0 ? "w-full" : "w-[85%]"} snap-start relative" data-slide-index="${index + 1}">
 <img alt="${property.name} 图片 ${index + 1}" class="w-full h-full object-cover" loading="lazy" src="${image}"/>
@@ -619,7 +834,7 @@ ${index === 0 ? `<div class="absolute top-3 left-3 flex gap-2"><span class="${ge
 
     return `
 <div class="group relative bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/10 shadow-sm transition-all duration-300 active:ring-2 active:ring-primary/20">
-<a aria-label="查看项目详情" class="card-link" href="${getProjectDetailUrl(property)}"></a>
+${detailUrl ? `<a aria-label="查看项目详情" class="card-link" href="${detailUrl}"></a>` : ""}
 <div class="card-media relative overflow-x-auto flex snap-x snap-mandatory hide-scrollbar gap-2 h-52 scroll-smooth" data-carousel>
 ${imageSlides}
 <div class="pointer-events-none absolute bottom-3 right-3 z-30 rounded-full bg-black/45 px-2.5 py-1 text-[10px] font-label font-bold tracking-wide text-white backdrop-blur-md" data-carousel-indicator>1/${property.images.length}</div>
@@ -646,26 +861,11 @@ ${property.location}
 ${tagList}
 </div>
 <div class="grid grid-cols-2 gap-x-3 gap-y-4 py-4 border-t border-outline-variant/10">
-<div class="space-y-0.5">
-<p class="text-[9px] font-label font-bold text-outline uppercase tracking-wider">面积区间</p>
-<p class="text-xs font-semibold font-body">${property.sizeRange}</p>
-</div>
-<div class="space-y-0.5">
-<p class="text-[9px] font-label font-bold text-outline uppercase tracking-wider">所属区域</p>
-<p class="text-xs font-semibold font-body">${property.region}</p>
-</div>
-<div class="space-y-0.5">
-<p class="text-[9px] font-label font-bold text-outline uppercase tracking-wider">所属板块</p>
-<p class="text-xs font-semibold font-body">${property.sector}</p>
-</div>
-<div class="space-y-0.5">
-<p class="text-[9px] font-label font-bold text-outline uppercase tracking-wider">梯户比</p>
-<p class="text-xs font-semibold font-body">${property.elevatorRatio}</p>
-</div>
+${primaryInfo}
 </div>
 <div class="mt-4 flex justify-center">
 <span class="text-[10px] text-outline flex items-center gap-1 font-label">
-点击进入项目详情
+${detailUrl ? "点击进入项目详情" : "以上信息仅供参考"}
 <svg aria-hidden="true" class="h-[12px] w-[12px] flex-none" fill="currentColor" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6-1.41-1.41L12.17 12 7.59 7.41 9 6Z"/></svg>
 </span>
 </div>
@@ -736,22 +936,35 @@ function applyFilters() {
   const areaRange = getSelectedAreaRange(areaFilter.value);
   const priceRange = getSelectedPriceRange(priceFilter.value);
   const hasActiveFilters = Boolean(keyword || region || sector || room || areaFilter.value || priceFilter.value);
-  const filteredProperties = properties.filter((property) => {
+  const filteredProperties = getActiveProperties().filter((property) => {
+    const categoryFacet = property.category === "commercial"
+      ? property.buildingType
+      : property.category === "office"
+        ? property.propertyLevel
+        : "";
     const searchPool = [
       property.name,
       property.location,
       property.region,
       property.sector,
+      property.propertyYears,
+      property.buildingType,
+      property.propertyLevel,
+      property.decoration,
+      property.marketingAgent,
+      property.propertyCompany,
       ...getPropertyRooms(property).map((roomType) => `${roomType}室`),
       ...property.tags,
       ...property.features
-    ].join(" ").toLowerCase();
+    ].filter(Boolean).join(" ").toLowerCase();
     const sizeRange = getPropertySizeRange(property);
 
     const matchesKeyword = !keyword || searchPool.includes(keyword);
     const matchesRegion = !region || property.region === region;
     const matchesSector = !sector || property.sector === sector;
-    const matchesRoom = !room || getPropertyRooms(property).includes(Number(room));
+    const matchesRoom = !room || (property.category === "residential"
+      ? getPropertyRooms(property).includes(Number(room))
+      : categoryFacet === room);
     const matchesArea = !areaRange || (sizeRange.min <= areaRange.max && sizeRange.max >= areaRange.min);
     const matchesPrice = !priceRange || (property.priceMin <= priceRange.max && property.priceMax >= priceRange.min);
 
@@ -800,6 +1013,10 @@ filterControls.forEach((control) => {
   control.addEventListener(eventName, applyFilters);
 });
 
+propertyTypeTabs.forEach((button) => {
+  button.addEventListener("click", () => setActivePropertyType(button.dataset.propertyType));
+});
+
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !filterModal.classList.contains("hidden")) {
     setFilterModalVisibility(false);
@@ -807,6 +1024,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 populateFilterOptions();
+syncPropertyTypeUI();
 setFilterModalVisibility(false);
 applyFilters();
 </script>

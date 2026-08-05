@@ -33,6 +33,15 @@ const PROTOTYPE_PROJECTS = {
   p6: { name: "城投锦澜台", district: "成华区", priceText: "18800-25800元/㎡", areaText: "84-143㎡", layout: ["2室2厅1卫 84㎡", "3室2厅2卫 108㎡", "4室2厅2卫 136㎡"], open: "2-10栋" }
 };
 
+const BUSINESS_PROJECTS = {
+  "commercial-tianfu": { category: "commercial", name: "天府国际社区商业", district: "高新区", sector: "大源中央", priceText: "88-175万", areaText: "38-76㎡", layout: ["临街商铺 · 38㎡", "转角商铺 · 56㎡", "餐饮商铺 · 76㎡"], open: "1栋、2栋" },
+  "commercial-global": { category: "commercial", name: "环球中心商业中心", district: "高新区", sector: "金融城", priceText: "118-255万", areaText: "45-98㎡", layout: ["临街商铺 · 45㎡", "内街商铺 · 68㎡", "旗舰商铺 · 98㎡"], open: "1栋、2栋" },
+  "commercial-jinjiang": { category: "commercial", name: "锦江里·社区底商", district: "锦江区", sector: "春熙路", priceText: "92-186万", areaText: "42-82㎡", layout: ["社区商铺 · 42㎡", "转角商铺 · 60㎡", "临街商铺 · 82㎡"], open: "1栋、2栋" },
+  "office-finance-city": { category: "office", name: "金融城智汇中心", district: "高新区", sector: "金融城", priceText: "320-1280万", areaText: "120-520㎡", layout: ["标准办公 · 120㎡", "整层办公 · 280㎡", "总部办公 · 520㎡"], open: "A座、B座" },
+  "office-tianfu-software": { category: "office", name: "天府软件园创新中心", district: "高新区", sector: "大源中央", priceText: "260-960万", areaText: "96-380㎡", layout: ["创意办公 · 96㎡", "标准办公 · 180㎡", "整层办公 · 380㎡"], open: "A座、B座" },
+  "office-east-station": { category: "office", name: "东客站门户大厦", district: "成华区", sector: "东客站", priceText: "198-760万", areaText: "88-360㎡", layout: ["灵活办公 · 88㎡", "标准办公 · 168㎡", "整层办公 · 360㎡"], open: "A座、B座" }
+};
+
 function hashString(text) {
   return Array.from(text).reduce((acc, char) => (acc * 33 + char.charCodeAt(0)) % 100000, 11);
 }
@@ -57,7 +66,7 @@ function normalizeBuildingName(value) {
   if (!text) {
     return "";
   }
-  return /(栋|楼)$/.test(text) ? text : `${text}栋`;
+  return /(栋|楼|座)$/.test(text) ? text : `${text}栋`;
 }
 
 function getBuildingNames(openBuildingsText) {
@@ -130,6 +139,24 @@ function getPrototypeModel(projectId) {
   };
 }
 
+function getBusinessModel(projectId) {
+  const project = BUSINESS_PROJECTS[projectId];
+  if (!project) {
+    return null;
+  }
+  return {
+    projectId,
+    category: project.category,
+    name: project.name,
+    districtText: project.district,
+    sectorName: project.sector,
+    priceText: project.priceText,
+    areaText: project.areaText,
+    layouts: project.layout,
+    openBuildingsText: project.open
+  };
+}
+
 function getMapModel(projectId) {
   const store = getStore();
   const record = store?.findProjectById?.(projectId);
@@ -154,6 +181,9 @@ function getMapModel(projectId) {
 }
 
 function getModel(projectId) {
+  if (BUSINESS_PROJECTS[projectId]) {
+    return getBusinessModel(projectId);
+  }
   if (HOME_PROJECTS[projectId]) {
     return getHomeModel(projectId);
   }
@@ -164,7 +194,8 @@ function getLayoutMeta(layoutText) {
   const areaMatch = layoutText.match(/(\d+(?:\.\d+)?)\s*㎡/);
   const layoutMatch = layoutText.match(/(\d+)\s*[房室][^\s·]*/);
   const area = areaMatch ? Number(areaMatch[1]) : 100;
-  const layout = layoutMatch ? layoutMatch[0].replace("室", "房") : "3房";
+  const businessLayout = layoutText.split(/[·]/)[0].trim();
+  const layout = layoutMatch ? layoutMatch[0].replace("室", "房") : businessLayout || "3房";
   const roomType = layout.match(/\d+房/)?.[0] || layout;
   return { area, layout, roomType };
 }
@@ -191,9 +222,11 @@ function buildPresales(model) {
     const date = `2026-${pad2(3 + certIndex * 3 + (seed % 3))}-${pad2(8 + ((seed + certIndex) % 12))}`;
     const rooms = [];
     const activeBuildings = buildingNames;
+    const unitNames = model.category === "commercial" ? ["商铺"] : model.category === "office" ? ["A区", "B区"] : ["1单元", "2单元"];
+    const floorNumbers = model.category === "commercial" ? [4, 3, 2, 1] : [18, 17, 16, 15];
     activeBuildings.forEach((building, buildingIndex) => {
-      ["1单元", "2单元"].forEach((unit, unitIndex) => {
-        [18, 17, 16, 15].forEach((floor, floorIndex) => {
+      unitNames.forEach((unit, unitIndex) => {
+        floorNumbers.forEach((floor, floorIndex) => {
           [1, 2].forEach((roomSeq) => {
             const layoutMeta = layouts[(buildingIndex + unitIndex + floorIndex + roomSeq + certIndex) % layouts.length];
             const area = Number((layoutMeta.area + ((seed + floor + roomSeq) % 5) * 0.8).toFixed(1));
@@ -249,6 +282,9 @@ function renderPresaleTabs() {
 function getDisplayLayout(room) {
   const area = Number(room.area || 0);
   const layout = room.layout || "3房2厅2卫";
+  if (!/\d+\s*[房室]/.test(layout)) {
+    return layout;
+  }
   if (/厅|卫/.test(layout)) {
     return layout;
   }
@@ -349,7 +385,9 @@ function bindEvents() {
   refs.backButton.addEventListener("click", () => {
     window.location.href = refs.backDetailButton.href;
   });
-  refs.backDetailButton.href = `./project-detail.html?projectId=${encodeURIComponent(state.projectId)}`;
+  const isBusinessProject = Boolean(BUSINESS_PROJECTS[state.projectId]);
+  refs.backDetailButton.textContent = isBusinessProject ? "返回项目详情" : "返回楼盘详情";
+  refs.backDetailButton.href = `${isBusinessProject ? "./business-project-detail.html" : "./project-detail.html"}?projectId=${encodeURIComponent(state.projectId)}`;
   refs.presaleTabs.addEventListener("click", (event) => {
     const button = event.target.closest("[data-presale-id]");
     if (!button) {
