@@ -141,13 +141,13 @@
             z-index: 20;
             display: inline-grid;
             place-items: center;
-            width: 42px;
-            height: 42px;
-            flex: 0 0 42px;
-            border: 1px solid rgba(192, 200, 204, 0.45);
-            border-radius: 50%;
-            background: #ffffff;
-            color: #637083;
+            width: 38px;
+            height: 38px;
+            flex: 0 0 38px;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            color: #20262d;
             transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
         }
         .property-follow svg {
@@ -159,12 +159,86 @@
             transition: fill 0.18s ease;
         }
         .property-follow.is-followed {
-            border-color: rgba(255, 78, 109, 0.2);
-            background: #fff4f7;
+            background: transparent;
             color: #ff4e6d;
         }
         .property-follow.is-followed svg {
             fill: currentColor;
+        }
+        .property-card {
+            overflow: hidden;
+            border: 1px solid rgba(25, 28, 29, 0.06);
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 7px 22px rgba(45, 55, 68, 0.09);
+        }
+        .property-card__body {
+            padding: 17px 18px 20px;
+        }
+        .property-card__title {
+            margin: 0;
+            color: #171b20;
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+        }
+        .property-card__location {
+            margin-top: 7px;
+            color: #2785c5;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.55;
+        }
+        .property-card__meta {
+            margin-top: 3px;
+            color: #6c737c;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+        .property-card__tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .property-card__tag {
+            border: 1px solid #d9dde2;
+            border-radius: 2px;
+            background: #ffffff;
+            padding: 3px 7px;
+            color: #30353b;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        .property-card__price {
+            margin-top: 10px;
+            color: #20252b;
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 1.2;
+            letter-spacing: -0.03em;
+        }
+        .property-carousel-dots {
+            position: absolute;
+            left: 50%;
+            bottom: 10px;
+            z-index: 30;
+            display: flex;
+            gap: 7px;
+            transform: translateX(-50%);
+        }
+        .property-carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.42);
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+        }
+        .property-carousel-dot.is-active {
+            width: 24px;
+            background: #ffffff;
         }
         @media (max-width: 430px) {
             .mobile-app {
@@ -212,10 +286,11 @@
 <!-- Section Header -->
 <div class="mb-5 px-1">
 <h1 class="sr-only">楼盘列表</h1>
-<div class="flex items-end gap-6 overflow-x-auto hide-scrollbar" role="tablist" aria-label="楼盘业态">
+<div class="flex items-end gap-5 overflow-x-auto hide-scrollbar" role="tablist" aria-label="楼盘业态">
 <button class="property-type-tab whitespace-nowrap border-b-2 border-primary pb-2 text-[17px] font-extrabold font-headline text-primary" data-property-type="residential" role="tab" aria-selected="true" type="button">住宅</button>
+<button class="property-type-tab whitespace-nowrap border-b-2 border-transparent pb-2 text-[17px] font-bold font-headline text-secondary" data-property-type="apartment" role="tab" aria-selected="false" type="button">公寓</button>
+<button class="property-type-tab whitespace-nowrap border-b-2 border-transparent pb-2 text-[17px] font-bold font-headline text-secondary" data-property-type="office" role="tab" aria-selected="false" type="button">写字楼</button>
 <button class="property-type-tab whitespace-nowrap border-b-2 border-transparent pb-2 text-[17px] font-bold font-headline text-secondary" data-property-type="commercial" role="tab" aria-selected="false" type="button">商业</button>
-<button class="property-type-tab whitespace-nowrap border-b-2 border-transparent pb-2 text-[17px] font-bold font-headline text-secondary" data-property-type="office" role="tab" aria-selected="false" type="button">办公</button>
 </div>
 <p id="filterSummary" class="mt-2 text-xs font-medium text-secondary">共 6 个在售楼盘</p>
 </div>
@@ -478,6 +553,36 @@ properties.forEach((property, index) => {
 
 properties.push(
   {
+    projectId: "apartment-tianfu", category: "apartment", detailUrl: "./business-project-detail.html?projectId=apartment-tianfu", name: "天府国际服务式公寓",
+    badge: "热销公寓", badgeTone: "tertiary", location: "高新区 · 天府三街", region: "高新区", sector: "大源中央",
+    priceMin: 45, priceMax: 98, tags: ["精装修"], features: ["拎包入住"],
+    sizeRange: "28 - 58 m²", elevatorRatio: "6梯24户", unitMeta: "1房1厅1卫 · 38m²", roomTypes: [1],
+    propertyYears: "40年", apartmentType: "服务式公寓", decoration: "精装修", commercialArea: "28 - 58 m²",
+    openingDate: "2025年09月", deliveryDate: "2027年06月", totalUnits: "360户", unitRange: "28 - 58 m²",
+    standardFloorArea: "约1,600 m²", marketingAgent: "世联行", propertyCompany: "成都天府物业", propertyFee: "6.8元/m²/月",
+    images: ["https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80", "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80"]
+  },
+  {
+    projectId: "apartment-global", category: "apartment", detailUrl: "./business-project-detail.html?projectId=apartment-global", name: "环球中心臻选公寓",
+    badge: "在售公寓", badgeTone: "primary", location: "高新区 · 环球中心", region: "高新区", sector: "金融城",
+    priceMin: 56, priceMax: 126, tags: ["酒店式公寓", "普通装修"], features: ["成熟商圈", "近地铁"],
+    sizeRange: "35 - 72 m²", elevatorRatio: "8梯32户", unitMeta: "1房1厅1卫 · 45m²", roomTypes: [1, 2],
+    propertyYears: "40年", apartmentType: "酒店式公寓", decoration: "普通装修", commercialArea: "35 - 72 m²",
+    openingDate: "2025年12月", deliveryDate: "2027年12月", totalUnits: "288户", unitRange: "35 - 72 m²",
+    standardFloorArea: "约2,000 m²", marketingAgent: "中原地产", propertyCompany: "环球中心物业", propertyFee: "7.5元/m²/月",
+    images: ["https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80", "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80"]
+  },
+  {
+    projectId: "apartment-jinjiang", category: "apartment", detailUrl: "./business-project-detail.html?projectId=apartment-jinjiang", name: "锦江里都会公寓",
+    badge: "核心商圈", badgeTone: "tertiary", location: "锦江区 · 东大街", region: "锦江区", sector: "春熙路",
+    priceMin: 48, priceMax: 118, tags: ["精致小户", "精装修"], features: ["核心商圈", "交通便利"],
+    sizeRange: "32 - 65 m²", elevatorRatio: "6梯28户", unitMeta: "1房1厅1卫 · 42m²", roomTypes: [1],
+    propertyYears: "40年", apartmentType: "城市公寓", decoration: "精装修", commercialArea: "32 - 65 m²",
+    openingDate: "2026年03月", deliveryDate: "2027年09月", totalUnits: "216户", unitRange: "32 - 65 m²",
+    standardFloorArea: "约1,300 m²", marketingAgent: "锐理数据", propertyCompany: "锦江城市物业", propertyFee: "5.8元/m²/月",
+    images: ["https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80", "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80"]
+  },
+  {
     projectId: "commercial-tianfu", category: "commercial", detailUrl: "./business-project-detail.html?projectId=commercial-tianfu", name: "天府国际社区商业",
     badge: "热销商业", badgeTone: "tertiary", location: "高新区 · 天府三街", region: "高新区", sector: "大源中央",
     priceMin: 88, priceMax: 175, tags: ["集中式商业", "精装修"], features: ["近地铁", "成熟配套"],
@@ -510,7 +615,7 @@ properties.push(
   {
     projectId: "office-finance-city", category: "office", detailUrl: "./business-project-detail.html?projectId=office-finance-city", name: "金融城智汇中心",
     badge: "甲级办公", badgeTone: "primary", location: "高新区 · 交子大道", region: "高新区", sector: "金融城",
-    priceMin: 320, priceMax: 1280, tags: ["OFFICE", "精装修"], features: ["轨道直达", "商务配套", "总部办公"],
+    priceMin: 320, priceMax: 1280, tags: ["精装修"], features: ["轨道直达", "商务配套", "总部办公"],
     sizeRange: "120 - 520 m²", elevatorRatio: "12梯16户", unitMeta: "开放办公 · 180m²", roomTypes: [],
     propertyYears: "40年", propertyLevel: "OFFICE", floorHeight: "4.2m", decoration: "精装修", officeArea: "120 - 520 m²",
     openingDate: "2025年10月", deliveryDate: "2027年06月", totalUnits: "180户", unitRange: "120 - 520 m²",
@@ -552,8 +657,20 @@ const propertyTypeConfig = {
     areaOptions: [["0-90", "90㎡以下"], ["90-120", "90-120㎡"], ["120-144", "120-144㎡"], ["144+", "144㎡以上"]],
     priceOptions: [["0-150", "150万以内"], ["150-250", "150万-250万"], ["250-400", "250万-400万"], ["400-600", "400万-600万"], ["600+", "600万及以上"]]
   },
+  apartment: {
+    label: "公寓",
+    mapLabel: "公寓地图",
+    mapHref: "./chengdu-sector-map.html?mode=apartment",
+    facetLabel: "公寓类型",
+    facetPlaceholder: "全部公寓类型",
+    facetVisible: false,
+    areaLabel: "面积",
+    priceLabel: "总价",
+    areaOptions: [["0-40", "40㎡以下"], ["40-60", "40-60㎡"], ["60-80", "60-80㎡"], ["80+", "80㎡以上"]],
+    priceOptions: [["0-30", "30万以内"], ["30-60", "30万-60万"], ["60-100", "60万-100万"], ["100+", "100万以上"]]
+  },
   commercial: {
-    label: "商业（公寓）",
+    label: "商业",
     mapLabel: "商业地图",
     mapHref: "./chengdu-sector-map.html?mode=commercial",
     facetLabel: "产品类型",
@@ -565,8 +682,8 @@ const propertyTypeConfig = {
     priceOptions: [["0-30", "30万以内"], ["30-60", "30万-60万"], ["60-100", "60万-100万"], ["100+", "100万以上"]]
   },
   office: {
-    label: "办公",
-    mapLabel: "办公地图",
+    label: "写字楼",
+    mapLabel: "写字楼地图",
     mapHref: "./chengdu-sector-map.html?mode=office",
     facetLabel: "办公类型",
     facetPlaceholder: "全部办公类型",
@@ -679,7 +796,11 @@ function populateFilterOptions() {
   const sectors = [...new Set(activeProperties.map((property) => property.sector))];
   const facets = activePropertyType === "residential"
     ? [...new Set(activeProperties.flatMap(getPropertyRooms))].sort((left, right) => left - right)
-    : [...new Set(activeProperties.map((property) => activePropertyType === "commercial" ? property.buildingType : property.propertyLevel).filter(Boolean))];
+    : [...new Set(activeProperties.map((property) => {
+      if (activePropertyType === "apartment") return property.apartmentType;
+      if (activePropertyType === "commercial") return property.buildingType;
+      return property.propertyLevel;
+    }).filter(Boolean))];
 
   regionFilter.innerHTML = [
     '<option value="">全部区域</option>',
@@ -783,94 +904,41 @@ function toggleFollowedProject(projectId) {
   return followed.has(projectId);
 }
 
-function getPropertyPrimaryInfo(property) {
-  if (property.category === "commercial") {
-    return [
-      ["产权年限", property.propertyYears],
-      ["商业建筑面积", property.commercialArea],
-      ["标准层面积", property.standardFloorArea],
-      ["物业费", property.propertyFee]
-    ];
-  }
-
-  if (property.category === "office") {
-    return [
-      ["产权年限", property.propertyYears],
-      ["办公建筑面积", property.officeArea],
-      ["层高", property.floorHeight],
-      ["物业费", property.propertyFee]
-    ];
-  }
-
-  return [
-    ["面积区间", property.sizeRange],
-    ["所属区域", property.region],
-    ["所属板块", property.sector],
-    ["梯户比", property.elevatorRatio]
-  ];
-}
-
-function renderPropertyInfoItems(items) {
-  return items.map(([label, value]) => `
-<div class="min-w-0 space-y-0.5">
-<p class="text-[9px] font-label font-bold text-outline uppercase tracking-wider">${label}</p>
-<p class="break-words text-xs font-semibold font-body text-on-surface">${value || "—"}</p>
-</div>`.trim()).join("");
-}
-
 function renderProperties(list) {
   const followedProjects = getFollowedProjects();
   propertyList.innerHTML = list.map((property) => {
     const isFollowed = followedProjects.has(property.projectId);
     const detailUrl = getProjectDetailUrl(property);
-    const primaryInfo = renderPropertyInfoItems(getPropertyPrimaryInfo(property));
     const imageSlides = property.images.map((image, index) => `
-<div class="flex-none ${index === 0 ? "w-full" : "w-[85%]"} snap-start relative" data-slide-index="${index + 1}">
+<div class="flex-none w-full snap-start relative" data-slide-index="${index + 1}">
 <img alt="${property.name} 图片 ${index + 1}" class="w-full h-full object-cover" loading="lazy" src="${image}"/>
-${index === 0 ? `<div class="absolute top-3 left-3 flex gap-2"><span class="${getBadgeClasses(property.badgeTone)} px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider font-label backdrop-blur-md">${property.badge}</span></div>` : ""}
 </div>`.trim()).join("");
 
-    const tagList = property.tags.map((tag) => `<span class="bg-surface-container-high px-2.5 py-0.5 rounded-full text-[11px] font-label font-semibold text-primary">${tag}</span>`).join("");
+    const tagList = property.tags.slice(0, 2).map((tag) => `<span class="property-card__tag">${tag}</span>`).join("");
+    const carouselDots = property.images.map((_, index) => `<i class="property-carousel-dot ${index === 0 ? "is-active" : ""}"></i>`).join("");
 
     return `
-<div class="group relative bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/10 shadow-sm transition-all duration-300 active:ring-2 active:ring-primary/20">
+<article class="property-card group relative transition-all duration-300 active:ring-2 active:ring-primary/20">
 ${detailUrl ? `<a aria-label="查看项目详情" class="card-link" href="${detailUrl}"></a>` : ""}
-<div class="card-media relative overflow-x-auto flex snap-x snap-mandatory hide-scrollbar gap-2 h-52 scroll-smooth" data-carousel>
+<div class="card-media relative flex h-52 snap-x snap-mandatory gap-0 overflow-x-auto scroll-smooth hide-scrollbar" data-carousel>
 ${imageSlides}
-<div class="pointer-events-none absolute bottom-3 right-3 z-30 rounded-full bg-black/45 px-2.5 py-1 text-[10px] font-label font-bold tracking-wide text-white backdrop-blur-md" data-carousel-indicator>1/${property.images.length}</div>
+<div class="property-carousel-dots pointer-events-none" data-carousel-indicator>${carouselDots}</div>
 </div>
-<div class="p-4">
-<div class="flex flex-col gap-2 mb-3">
+<div class="property-card__body">
 <div class="flex items-start justify-between gap-3">
 <div class="min-w-0">
-<h2 class="text-[24px] font-bold font-headline text-primary leading-tight">${property.name}</h2>
-<p class="text-secondary font-body flex items-center gap-1 text-xs mt-1">
-<svg aria-hidden="true" class="h-[14px] w-[14px] flex-none" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 4.78 5.34 11.74 6.07 12.68a1.16 1.16 0 0 0 1.86 0C13.66 20.74 19 13.78 19 9a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/></svg>
-${property.location}
-</p>
+<h2 class="property-card__title">${property.name}</h2>
 </div>
 <button class="property-follow card-inner-action ${isFollowed ? "is-followed" : ""}" type="button" data-follow-project="${property.projectId}" data-project-name="${property.name}" aria-label="${isFollowed ? "取消关注" : "关注"} ${property.name}" aria-pressed="${isFollowed}">
-<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"/></svg>
+<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"/><path d="M18.5 15.5v5M16 18h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
 </div>
-<div>
-<p class="text-lg font-extrabold font-headline text-primary">¥${property.priceMin}万 - ${property.priceMax}万</p>
+<p class="property-card__location">${property.location}</p>
+<p class="property-card__meta">${property.sizeRange} · ${property.region}</p>
+<div class="property-card__tags">${tagList}</div>
+<p class="property-card__price">¥${property.priceMin}万-¥${property.priceMax}万</p>
 </div>
-</div>
-<div class="flex flex-wrap gap-1.5 mb-4">
-${tagList}
-</div>
-<div class="grid grid-cols-2 gap-x-3 gap-y-4 py-4 border-t border-outline-variant/10">
-${primaryInfo}
-</div>
-<div class="mt-4 flex justify-center">
-<span class="text-[10px] text-outline flex items-center gap-1 font-label">
-${detailUrl ? "点击进入项目详情" : "以上信息仅供参考"}
-<svg aria-hidden="true" class="h-[12px] w-[12px] flex-none" fill="currentColor" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6-1.41-1.41L12.17 12 7.59 7.41 9 6Z"/></svg>
-</span>
-</div>
-</div>
-</div>`.trim();
+</article>`.trim();
   }).join("");
   bindMediaCarousels();
 }
@@ -916,7 +984,10 @@ function bindMediaCarousels() {
 
     let frameId = 0;
     const syncIndicator = () => {
-      indicator.textContent = `${getCurrentSlideIndex(track)}/${slides.length}`;
+      const currentIndex = getCurrentSlideIndex(track) - 1;
+      indicator.querySelectorAll(".property-carousel-dot").forEach((dot, index) => {
+        dot.classList.toggle("is-active", index === currentIndex);
+      });
     };
 
     track.addEventListener("scroll", () => {
@@ -939,6 +1010,8 @@ function applyFilters() {
   const filteredProperties = getActiveProperties().filter((property) => {
     const categoryFacet = property.category === "commercial"
       ? property.buildingType
+      : property.category === "apartment"
+        ? property.apartmentType
       : property.category === "office"
         ? property.propertyLevel
         : "";
@@ -948,6 +1021,7 @@ function applyFilters() {
       property.region,
       property.sector,
       property.propertyYears,
+      property.apartmentType,
       property.buildingType,
       property.propertyLevel,
       property.decoration,

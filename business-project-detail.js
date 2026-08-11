@@ -19,10 +19,6 @@
       park: [
         { icon: "园", title: "桂溪生态公园", desc: "城市生态绿地与休闲步道", x: 68, y: 30 },
         { icon: "湖", title: "锦城湖公园", desc: "滨水景观与户外休闲空间", x: 32, y: 70 }
-      ],
-      service: [
-        { icon: "务", title: "政务服务中心", desc: "企业与个人办事服务", x: 65, y: 32 },
-        { icon: "银", title: "金融服务网点", desc: "银行与商务服务配套", x: 38, y: 70 }
       ]
     },
     office: {
@@ -37,13 +33,10 @@
       park: [
         { icon: "园", title: "交子公园", desc: "商务区城市公园与午间休闲空间", x: 68, y: 30 },
         { icon: "绿", title: "桂溪生态公园", desc: "生态绿道与企业活动空间", x: 32, y: 70 }
-      ],
-      service: [
-        { icon: "会", title: "会议中心", desc: "企业会议与活动空间", x: 65, y: 32 },
-        { icon: "银", title: "金融机构集群", desc: "多家银行及专业服务机构", x: 38, y: 70 }
       ]
     }
   };
+  supportTemplates.apartment = supportTemplates.commercial;
 
   const projects = {
     "commercial-tianfu": {
@@ -127,14 +120,14 @@
     "office-finance-city": {
       id: "office-finance-city",
       category: "office",
-      categoryLabel: "办公",
+      categoryLabel: "写字楼",
       name: "金融城智汇中心",
       district: "高新区",
       sector: "金融城",
       address: "成都高新区交子大道",
       status: "在售",
       price: "320万 - 1280万",
-      tags: ["OFFICE", "精装修", "总部办公"],
+      tags: ["精装修", "总部办公"],
       phone: "4000289988",
       total: 180,
       sold: 122,
@@ -153,7 +146,7 @@
     "office-tianfu-software": {
       id: "office-tianfu-software",
       category: "office",
-      categoryLabel: "办公",
+      categoryLabel: "写字楼",
       name: "天府软件园创新中心",
       district: "高新区",
       sector: "大源中央",
@@ -179,7 +172,7 @@
     "office-east-station": {
       id: "office-east-station",
       category: "office",
-      categoryLabel: "办公",
+      categoryLabel: "写字楼",
       name: "东客站门户大厦",
       district: "成华区",
       sector: "东客站",
@@ -203,6 +196,47 @@
       ]
     }
   };
+
+  function createApartmentProject(baseId, data) {
+    const base = projects[baseId];
+    return {
+      ...base,
+      ...data,
+      category: "apartment",
+      categoryLabel: "公寓",
+      basic: [
+        ["项目名称", data.name],
+        ["所属区域", data.district],
+        ["所属板块", data.sector],
+        ["产权年限", "40年"],
+        ["公寓建筑面积", data.area],
+        ["装修", data.decoration],
+        ["户型区间", data.area],
+        ["总户数", `${data.total}户`]
+      ]
+    };
+  }
+
+  Object.assign(projects, {
+    "apartment-tianfu": createApartmentProject("commercial-tianfu", {
+      id: "apartment-tianfu", name: "天府国际服务式公寓", district: "高新区", sector: "大源中央",
+      address: "成都高新区天府三街", price: "45万 - 98万", area: "28 - 58 m²", decoration: "精装修",
+      tags: ["精装修"], total: 360, sold: 228,
+      intro: "项目位于天府三街成熟生活圈，以精装小户型和便捷通勤为主要特点，适合关注居住便利与空间效率的用户。"
+    }),
+    "apartment-global": createApartmentProject("commercial-global", {
+      id: "apartment-global", name: "环球中心臻选公寓", district: "高新区", sector: "金融城",
+      address: "成都高新区环球中心", price: "56万 - 126万", area: "35 - 72 m²", decoration: "普通装修",
+      tags: ["酒店式公寓", "普通装修", "成熟商圈"], total: 288, sold: 176,
+      intro: "项目依托环球中心商业与交通资源，提供紧凑灵活的公寓空间，满足城市居住、商旅停留等需求。"
+    }),
+    "apartment-jinjiang": createApartmentProject("commercial-jinjiang", {
+      id: "apartment-jinjiang", name: "锦江里都会公寓", district: "锦江区", sector: "春熙路",
+      address: "成都锦江区东大街", price: "48万 - 118万", area: "32 - 65 m²", decoration: "精装修",
+      tags: ["精致小户", "精装修", "核心商圈"], total: 216, sold: 139,
+      intro: "项目位于锦江区核心商圈，以精装小面积公寓为主，周边商业、交通、公园和医疗配套完善。"
+    })
+  });
 
   const refs = {
     backButton: document.getElementById("backButton"),
@@ -375,8 +409,8 @@
     const areaRow = project.basic.find(([label]) => label.includes("建筑面积") || label.includes("户型区间"));
     const values = (areaRow?.[1].match(/\d+(?:\.\d+)?/g) || []).map(Number);
     return {
-      min: values[0] || (project.category === "commercial" ? 40 : 100),
-      max: values[1] || values[0] || (project.category === "commercial" ? 80 : 300)
+      min: values[0] || (["commercial", "apartment"].includes(project.category) ? 40 : 100),
+      max: values[1] || values[0] || (["commercial", "apartment"].includes(project.category) ? 80 : 300)
     };
   }
 
@@ -392,8 +426,8 @@
     const area = getAreaRange();
     const price = getPriceRange();
     const samples = [
-      { label: "总价较低", room: project.category === "commercial" ? "1栋1层101号" : "A座8层801号", area: area.min, total: price.min },
-      { label: "总价较高", room: project.category === "commercial" ? "2栋2层205号" : "A座18层1802号", area: area.max, total: price.max }
+      { label: "总价较低", room: ["commercial", "apartment"].includes(project.category) ? "1栋1层101号" : "A座8层801号", area: area.min, total: price.min },
+      { label: "总价较高", room: ["commercial", "apartment"].includes(project.category) ? "2栋2层205号" : "A座18层1802号", area: area.max, total: price.max }
     ];
     refs.businessPriceNote.textContent = `展示${project.categoryLabel}项目代表房源，完整房源可按预售证、楼栋和楼层查看。`;
     refs.businessOnePriceList.innerHTML = `
@@ -415,7 +449,7 @@
     window.location.href = `./project-one-price.html?projectId=${encodeURIComponent(project.id)}`;
   }
 
-  const supportMeta = { traffic: "交通", commerce: "商业", park: "公园", service: "服务" };
+  const supportMeta = { traffic: "交通", commerce: "商业", park: "公园" };
 
   function renderSupport() {
     const items = supportTemplates[project.category][state.supportType] || [];

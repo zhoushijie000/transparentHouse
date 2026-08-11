@@ -34,6 +34,9 @@ const PROTOTYPE_PROJECTS = {
 };
 
 const BUSINESS_PROJECTS = {
+  "apartment-tianfu": { category: "apartment", name: "天府国际服务式公寓", district: "高新区", sector: "大源中央", priceText: "45-98万", areaText: "28-58㎡", layout: ["精装公寓 · 28㎡", "舒适公寓 · 42㎡", "一居公寓 · 58㎡"], open: "1栋、2栋" },
+  "apartment-global": { category: "apartment", name: "环球中心臻选公寓", district: "高新区", sector: "金融城", priceText: "56-126万", areaText: "35-72㎡", layout: ["精致公寓 · 35㎡", "一居公寓 · 52㎡", "舒适公寓 · 72㎡"], open: "1栋、2栋" },
+  "apartment-jinjiang": { category: "apartment", name: "锦江里都会公寓", district: "锦江区", sector: "春熙路", priceText: "48-118万", areaText: "32-65㎡", layout: ["精致公寓 · 32㎡", "一居公寓 · 45㎡", "舒适公寓 · 65㎡"], open: "1栋、2栋" },
   "commercial-tianfu": { category: "commercial", name: "天府国际社区商业", district: "高新区", sector: "大源中央", priceText: "88-175万", areaText: "38-76㎡", layout: ["临街商铺 · 38㎡", "转角商铺 · 56㎡", "餐饮商铺 · 76㎡"], open: "1栋、2栋" },
   "commercial-global": { category: "commercial", name: "环球中心商业中心", district: "高新区", sector: "金融城", priceText: "118-255万", areaText: "45-98㎡", layout: ["临街商铺 · 45㎡", "内街商铺 · 68㎡", "旗舰商铺 · 98㎡"], open: "1栋、2栋" },
   "commercial-jinjiang": { category: "commercial", name: "锦江里·社区底商", district: "锦江区", sector: "春熙路", priceText: "92-186万", areaText: "42-82㎡", layout: ["社区商铺 · 42㎡", "转角商铺 · 60㎡", "临街商铺 · 82㎡"], open: "1栋、2栋" },
@@ -222,7 +225,7 @@ function buildPresales(model) {
     const date = `2026-${pad2(3 + certIndex * 3 + (seed % 3))}-${pad2(8 + ((seed + certIndex) % 12))}`;
     const rooms = [];
     const activeBuildings = buildingNames;
-    const unitNames = model.category === "commercial" ? ["商铺"] : model.category === "office" ? ["A区", "B区"] : ["1单元", "2单元"];
+    const unitNames = model.category === "commercial" ? ["商铺"] : model.category === "office" ? ["A区", "B区"] : model.category === "apartment" ? ["1单元", "2单元"] : ["1单元", "2单元"];
     const floorNumbers = model.category === "commercial" ? [4, 3, 2, 1] : [18, 17, 16, 15];
     activeBuildings.forEach((building, buildingIndex) => {
       unitNames.forEach((unit, unitIndex) => {

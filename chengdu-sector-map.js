@@ -115,24 +115,30 @@ const SECTOR_BLUEPRINTS = [
 ];
 
 const requestedMapMode = new URLSearchParams(window.location.search).get("mode");
-const MAP_MODE = ["commercial", "office"].includes(requestedMapMode) ? requestedMapMode : "residential";
+const MAP_MODE = ["apartment", "commercial", "office"].includes(requestedMapMode) ? requestedMapMode : "residential";
 const IS_RESIDENTIAL_MODE = MAP_MODE === "residential";
 const MAP_MODE_META = {
   residential: { label: "住宅", listHref: "./index.html?tab=residential" },
+  apartment: { label: "公寓", listHref: "./index.html?tab=apartment" },
   commercial: { label: "商业", listHref: "./index.html?tab=commercial" },
-  office: { label: "办公", listHref: "./index.html?tab=office" }
+  office: { label: "写字楼", listHref: "./index.html?tab=office" }
 };
 
 const BUSINESS_MAP_PROJECTS = {
+  apartment: [
+    { id: "apartment-tianfu", sectorId: "dayuan", name: "天府国际服务式公寓", shortLabel: "天府国际公寓", district: "高新区", location: "天府三街", price: "45万 - 98万", area: "28 - 58㎡", tags: ["精装修"] },
+    { id: "apartment-global", sectorId: "financial-city", name: "环球中心臻选公寓", shortLabel: "环球臻选公寓", district: "高新区", location: "环球中心", price: "56万 - 126万", area: "35 - 72㎡", tags: ["酒店式公寓", "普通装修"] },
+    { id: "apartment-jinjiang", sectorId: "dongkezhan", name: "锦江里都会公寓", shortLabel: "锦江里公寓", district: "锦江区", location: "东大街", price: "48万 - 118万", area: "32 - 65㎡", tags: ["精致小户", "精装修"] }
+  ],
   commercial: [
-    { id: "commercial-tianfu", name: "天府国际社区商业", shortLabel: "天府国际", district: "高新区", location: "天府三街", price: "88万 - 175万", area: "38 - 76㎡", tags: ["集中式商业", "精装修", "40年产权"], position: { x: 650, y: 1125 } },
-    { id: "commercial-global", name: "环球中心商业中心", shortLabel: "环球中心", district: "高新区", location: "环球中心", price: "118万 - 255万", area: "45 - 98㎡", tags: ["专业市场", "普通装修", "40年产权"], position: { x: 680, y: 1010 } },
-    { id: "commercial-jinjiang", name: "锦江里·社区底商", shortLabel: "锦江里", district: "锦江区", location: "东大街", price: "92万 - 186万", area: "42 - 82㎡", tags: ["社区底商", "毛坯", "40年产权"], position: { x: 790, y: 925 } }
+    { id: "commercial-tianfu", sectorId: "dayuan", name: "天府国际社区商业", shortLabel: "天府国际", district: "高新区", location: "天府三街", price: "88万 - 175万", area: "38 - 76㎡", tags: ["集中式商业", "精装修", "40年产权"] },
+    { id: "commercial-global", sectorId: "financial-city", name: "环球中心商业中心", shortLabel: "环球中心", district: "高新区", location: "环球中心", price: "118万 - 255万", area: "45 - 98㎡", tags: ["专业市场", "普通装修", "40年产权"] },
+    { id: "commercial-jinjiang", sectorId: "dongkezhan", name: "锦江里·社区底商", shortLabel: "锦江里", district: "锦江区", location: "东大街", price: "92万 - 186万", area: "42 - 82㎡", tags: ["社区底商", "毛坯", "40年产权"] }
   ],
   office: [
-    { id: "office-finance-city", name: "金融城智汇中心", shortLabel: "金融城智汇", district: "高新区", location: "交子大道", price: "320万 - 1280万", area: "120 - 520㎡", tags: ["甲级写字楼", "精装修", "地铁沿线"], position: { x: 675, y: 1030 } },
-    { id: "office-tianfu-software", name: "天府软件园创新中心", shortLabel: "软件园创新", district: "高新区", location: "天府五街", price: "260万 - 960万", area: "96 - 380㎡", tags: ["SOHO", "普通装修", "园区配套"], position: { x: 675, y: 1170 } },
-    { id: "office-east-station", name: "东客站门户大厦", shortLabel: "东客站门户", district: "成华区", location: "成都东站", price: "198万 - 760万", area: "88 - 360㎡", tags: ["LOFT", "毛坯", "交通枢纽"], position: { x: 805, y: 900 } }
+    { id: "office-finance-city", sectorId: "financial-city", name: "金融城智汇中心", shortLabel: "金融城智汇", district: "高新区", location: "交子大道", price: "320万 - 1280万", area: "120 - 520㎡", tags: ["甲级写字楼", "精装修", "地铁沿线"] },
+    { id: "office-tianfu-software", sectorId: "dayuan", name: "天府软件园创新中心", shortLabel: "软件园创新", district: "高新区", location: "天府五街", price: "260万 - 960万", area: "96 - 380㎡", tags: ["SOHO", "普通装修", "园区配套"] },
+    { id: "office-east-station", sectorId: "dongkezhan", name: "东客站门户大厦", shortLabel: "东客站门户", district: "成华区", location: "成都东站", price: "198万 - 760万", area: "88 - 360㎡", tags: ["LOFT", "毛坯", "交通枢纽"] }
   ]
 };
 
@@ -193,42 +199,29 @@ const RESIDENTIAL_SECTORS = SECTOR_BLUEPRINTS.map((sector, index) => {
   };
 });
 
-function createBusinessMapGroups(mode) {
-  return (BUSINESS_MAP_PROJECTS[mode] || []).map((project, index) => {
-    const { x, y } = project.position;
-    return {
-      id: `${mode}-project-${index + 1}`,
-      name: `${project.district} · ${project.location}`,
-      shortName: project.district,
-      tier: "normal",
-      tone: "mature",
-      priceBand: [0, 0],
-      inventory: 1,
-      focus: "",
-      audience: "",
-      labelClass: "",
-      points: [
-        { x: x - 24, y: y - 24 },
-        { x: x + 24, y: y - 24 },
-        { x: x + 24, y: y + 24 },
-        { x: x - 24, y: y + 24 }
-      ],
-      center: { x, y },
-      color: "transparent",
-      priceRange: project.price,
-      supply: "1个项目",
-      projects: [{
+function createBusinessSectorMap(mode) {
+  const modeProjects = BUSINESS_MAP_PROJECTS[mode] || [];
+  return RESIDENTIAL_SECTORS.map((sector) => {
+    const projects = modeProjects
+      .filter((project) => project.sectorId === sector.id)
+      .map((project) => ({
         ...project,
-        sectorId: `${mode}-project-${index + 1}`,
-        sectorName: project.district,
+        sectorId: sector.id,
+        sectorName: sector.name,
         detailUrl: `./business-project-detail.html?projectId=${encodeURIComponent(project.id)}`,
         intro: `${project.district} · ${project.location}`
-      }]
+      }));
+    return {
+      ...sector,
+      inventory: projects.length,
+      priceRange: projects[0]?.price || "暂无参考价格",
+      supply: projects.length ? `${projects.length}个项目在售` : "暂无在售项目",
+      projects
     };
   });
 }
 
-const SECTORS = IS_RESIDENTIAL_MODE ? RESIDENTIAL_SECTORS : createBusinessMapGroups(MAP_MODE);
+const SECTORS = IS_RESIDENTIAL_MODE ? RESIDENTIAL_SECTORS : createBusinessSectorMap(MAP_MODE);
 
 function findProjectById(projectId) {
   for (const sector of SECTORS) {
@@ -353,11 +346,7 @@ function getActiveProject() {
 }
 
 function renderLegend() {
-  refs.legendRail.hidden = !IS_RESIDENTIAL_MODE;
-  if (!IS_RESIDENTIAL_MODE) {
-    refs.legendRail.innerHTML = "";
-    return;
-  }
+  refs.legendRail.hidden = false;
   refs.legendRail.innerHTML = LEGEND.map((item) => `
     <span class="legend-item">
       <i style="background:${item.color}"></i>${item.label}
@@ -476,8 +465,7 @@ function renderMap() {
   refs.sectorMap.setAttribute("viewBox", `${BASE_VIEWBOX.x} ${BASE_VIEWBOX.y} ${BASE_VIEWBOX.width} ${BASE_VIEWBOX.height}`);
   renderRealMapLayer();
 
-  if (IS_RESIDENTIAL_MODE) {
-    SECTORS.forEach((sector) => {
+  SECTORS.forEach((sector) => {
       const group = createSvgElement("g", {
         class: "sector-group" + (sector.id === state.activeSectorId ? " is-active" : ""),
         "data-sector-id": sector.id
@@ -500,8 +488,7 @@ function renderMap() {
       group.appendChild(text);
       refs.sectorMap.appendChild(group);
       sectorElements.set(sector.id, group);
-    });
-  }
+  });
 
   projectMarkersLayer = createSvgElement("g", { id: "projectMarkersLayer" });
   refs.sectorMap.appendChild(projectMarkersLayer);
@@ -519,7 +506,7 @@ function onMapClick(event) {
     return;
   }
   const group = event.target.closest("[data-sector-id]");
-  if (!IS_RESIDENTIAL_MODE || !group) {
+  if (!group) {
     closeProjectMapCard();
     return;
   }
@@ -528,10 +515,6 @@ function onMapClick(event) {
 }
 
 function renderSheet() {
-  if (!IS_RESIDENTIAL_MODE) {
-    setSheetCollapsed(true);
-    return;
-  }
   const sector = getActiveSector();
   if (!sector.projects.some((project) => project.id === state.activeProjectId)) {
     state.activeProjectId = sector.projects[0]?.id || null;
@@ -541,7 +524,7 @@ function renderSheet() {
 
   refs.sheetMetrics.innerHTML = [
     { label: "板块层级", value: TIER_META[sector.tier].label },
-    { label: "价格带", value: sector.priceRange },
+    { label: IS_RESIDENTIAL_MODE ? "价格带" : "项目价格", value: sector.priceRange },
     { label: "在售情况", value: sector.supply }
   ].map((item) => `
     <div class="metric-card">
@@ -563,7 +546,7 @@ function renderSheet() {
         </div>
         <div class="project-price">
           ${project.price}
-          <small>参考均价</small>
+          <small>${IS_RESIDENTIAL_MODE ? "参考均价" : "参考总价"}</small>
         </div>
       </div>
       <div class="project-card__footer">
@@ -673,7 +656,7 @@ function renderProjectMarkers() {
       class: [
         "project-marker",
         project.id === state.activeProjectId ? "is-active" : "",
-        IS_RESIDENTIAL_MODE && !isActiveSector ? "is-muted" : ""
+        isActiveSector ? "" : "is-muted"
       ].filter(Boolean).join(" "),
       transform: `translate(${project.position.x}, ${project.position.y})`,
       "data-project-id": project.id,
@@ -734,7 +717,7 @@ function renderProjectMarkers() {
 }
 
 function shouldShowProjectLayer() {
-  return !IS_RESIDENTIAL_MODE || state.viewBox.width <= PROJECT_LAYER_VIEWBOX_WIDTH;
+  return state.viewBox.width <= PROJECT_LAYER_VIEWBOX_WIDTH;
 }
 
 function getProjectMarkerRecord(projectId) {
@@ -789,7 +772,7 @@ function positionProjectMapCard() {
 
 function renderProjectMapCard(record) {
   const { sector, project } = record;
-  const kicker = IS_RESIDENTIAL_MODE ? sector.name : `${project.district} · ${project.location}`;
+  const kicker = sector.name;
   const priceLabel = IS_RESIDENTIAL_MODE ? "参考均价" : "参考总价";
   refs.projectMapCard.innerHTML = `
     <button class="project-map-card__close" type="button" data-close-project-map-card aria-label="关闭项目卡片">×</button>
@@ -797,7 +780,6 @@ function renderProjectMapCard(record) {
     <h4>${project.name}</h4>
     <div class="project-map-card__meta">
       <span>${project.area}</span>
-      ${project.tags.slice(0, 2).map((tag) => `<span>${tag}</span>`).join("")}
     </div>
     <div class="project-map-card__price">
       <span>${priceLabel}</span>

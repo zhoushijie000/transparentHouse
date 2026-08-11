@@ -95,7 +95,7 @@ button { font: inherit; }
 
 .category-tabs {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 4px;
   margin-bottom: 16px;
   padding: 4px;
@@ -110,8 +110,9 @@ button { font: inherit; }
   border-radius: 7px;
   color: #667386;
   background: transparent;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 750;
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -165,22 +166,28 @@ button { font: inherit; }
 .estate-card__body { padding: 15px 16px 17px; }
 .estate-card h2 {
   margin: 0 76px 0 0;
-  color: var(--brand);
-  font-size: 23px;
+  color: #171b20;
+  font-size: 22px;
   font-weight: 800;
   line-height: 1.25;
 }
 .estate-card__location {
   margin: 6px 0 0;
-  color: #738093;
-  font-size: 12px;
+  color: #2785c5;
+  font-size: 13px;
+  font-weight: 600;
+}
+.estate-card__summary {
+  margin: 4px 0 0;
+  color: #6c737c;
+  font-size: 14px;
 }
 .estate-card__price {
   display: block;
-  margin-top: 11px;
-  color: var(--brand);
-  font-size: 19px;
-  font-weight: 850;
+  margin-top: 10px;
+  color: #20252b;
+  font-size: 24px;
+  font-weight: 500;
 }
 .estate-card__tags {
   display: flex;
@@ -189,12 +196,13 @@ button { font: inherit; }
   margin-top: 10px;
 }
 .estate-card__tags span {
-  border-radius: 999px;
-  padding: 4px 9px;
-  color: #536275;
-  background: #eef1f4;
-  font-size: 11px;
-  font-weight: 650;
+  border: 1px solid #d9dde2;
+  border-radius: 2px;
+  padding: 3px 7px;
+  color: #30353b;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
 }
 .estate-card__meta {
   display: grid;
